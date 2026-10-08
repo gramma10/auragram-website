@@ -1,0 +1,706 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --night-1: #0a1020;
+    --night-2: #0e1628;
+    --bone: #fafaf7;
+    --ink: #0f1720;
+    --ink-soft: #5a6270;
+    --aura: #22d3ee;
+    --volt: #c7f94b;
+    --aura-dark: #0891b2;
+    --bone-2: #f3f3ee;
+    --line: #e6e7e2;
+    --fg: #b4bdcb; /* body σε dark — 10:1 */
+    --fg-dim: #8c96a8; /* labels σε dark — 6:1 */
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--bone);
+    color: var(--ink);
+    font-feature-settings: 'ss01', 'cv01';
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--aura);
+    color: var(--night-1);
+  }
+
+  /* Ορατά focus states — προϋπόθεση, όχι διακόσμηση. */
+  :focus-visible {
+    outline: 2px solid var(--aura);
+    outline-offset: 3px;
+  }
+
+  .on-light :focus-visible {
+    outline-color: var(--ink);
+  }
+
+  /* Τα νούμερα είναι επιχειρήματα πώλησης: πάντα tabular. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* ── Επιφάνειες ──────────────────────────────────────────────────────── */
+  .surface-dark {
+    background: linear-gradient(180deg, var(--night-1) 0%, var(--night-2) 100%);
+    color: #e6ecf5;
+  }
+
+  .surface-light {
+    background: var(--bone);
+    color: var(--ink);
+  }
+
+  /* Grid background — χαμηλό opacity, δεν κλέβει προσοχή από το κείμενο. */
+  .grid-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.013) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.013) 1px, transparent 1px);
+    background-size: 66px 66px;
+    /* Σβήνει προς τις άκρες — δεν ανταγωνίζεται ποτέ το κείμενο. */
+    mask-image: radial-gradient(ellipse 70% 65% at 50% 38%, #000 0%, transparent 72%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 65% at 50% 38%, #000 0%, transparent 72%);
+  }
+
+  /* ── Fade-up on scroll ───────────────────────────────────────────────
+     Ορατό by default· κρύβεται ΜΟΝΟ όταν τρέχει JS (html[data-js]).
+     Έτσι μια αποτυχία JS δεν αδειάζει τη σελίδα.                        */
+  html[data-js] .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+  }
+  html[data-js] .reveal.is-in {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+
+  /* ── Marquee εργαλείων ───────────────────────────────────────────────
+     Δύο ίδια tracks σε flex row· το καθένα ολισθαίνει κατά το πλάτος του
+     → seamless loop. Παύει στο hover. Fade στις άκρες με mask.            */
+  .marquee {
+    display: flex;
+    mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  }
+  .marquee-track {
+    flex-shrink: 0;
+    animation: marquee var(--marquee-dur, 50s) linear infinite;
+  }
+  /* 2η γραμμή: αντίθετη φορά */
+  .marquee-rev .marquee-track {
+    animation-direction: reverse;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  /* ── Chips ───────────────────────────────────────────────────────────── */
+  .chip {
+    @apply inline-flex items-center rounded-full px-3 py-1.5 text-[12px] font-medium tracking-wide;
+  }
+  .chip-dark {
+    @apply chip border border-white/[0.12] bg-white/[0.04] text-fg;
+  }
+  .chip-light {
+    @apply chip border border-ink/[0.12] bg-ink/[0.03] text-ink-soft;
+  }
+
+  /* ── Eyebrow ─────────────────────────────────────────────────────────── */
+  .eyebrow {
+    @apply font-mono text-[12px] font-medium uppercase tracking-[0.12em];
+  }
+
+  /* ── Type scale ─────────────────────────────────────────────────────── */
+  .h1,
+  .h2,
+  .h3 {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-weight: 800;
+    text-wrap: balance;
+  }
+  .h1 {
+    font-size: clamp(2.5rem, 1.6rem + 4.2vw, 5rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+  @media (min-width: 1024px) {
+    .h1-hero {
+      font-size: clamp(3rem, 2rem + 3vw, 4rem);
+    }
+  }
+  .h2 {
+    font-size: clamp(2rem, 1.5rem + 2.2vw, 3.25rem);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+  }
+  .h3 {
+    font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .t-body {
+    font-size: 17px;
+    line-height: 1.6;
+    max-width: 62ch;
+  }
+  .t-small {
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 62ch;
+  }
+  @media (min-width: 768px) {
+    .t-body {
+      font-size: 18px;
+    }
+  }
+
+  /* ── ΤΟ κουμπί: cyan παντού (dark ΚΑΙ light). Το glow μόνο σε hover/focus. ── */
+  .btn-cta {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    border-radius: 9999px;
+    background: var(--aura);
+    padding: 1rem 1.75rem;
+    color: var(--night-1);
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    transition: transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+  }
+  .btn-cta:hover,
+  .btn-cta:focus-visible {
+    background: #5eeaf7;
+    box-shadow: 0 8px 28px -10px rgba(34, 211, 238, 0.5);
+  }
+  .btn-cta:focus-visible {
+    outline: 2px solid var(--aura);
+    outline-offset: 3px;
+  }
+  /* Accent rule v3 — το accent ακολουθεί την επιφάνεια: σε LIGHT επιφάνεια (light sections, λευκές κάρτες ακόμα και μέσα σε dark
+     section) το κουμπί είναι lime #C7F94B με ink #0F1720 κείμενο (≈ 15:1) και 1px ink/10 περίγραμμα ώστε η άκρη να διαβάζεται
+     πάνω στο #FAFAF7. Hover = ελαφρύ σκούρο lime (#B8EA3A), χωρίς glow. Focus ring = ink 2px offset 3px (το lime δεν περνά). */
+  .on-light .btn-cta {
+    background: var(--volt);
+    color: var(--ink);
+    border: 1px solid rgba(15, 23, 32, 0.1);
+  }
+  .on-light .btn-cta:hover,
+  .on-light .btn-cta:focus-visible {
+    background: #b8ea3a;
+    box-shadow: none;
+  }
+  .on-light .btn-cta:focus-visible {
+    outline-color: var(--ink);
+  }
+  .btn-cta:active {
+    transform: scale(0.985);
+  }
+  .btn-cta .btn-arrow {
+    flex-shrink: 0;
+    transition: transform 200ms ease;
+  }
+  .btn-cta:hover .btn-arrow,
+  .btn-cta:focus-visible .btn-arrow {
+    transform: translateX(3px);
+  }
+
+  /* ── Marker highlight ({ m: '…' } στο copy — ΜΟΝΟ σε light sections) ───────────────────────────────────────────
+     Lime πίσω από ink κείμενο (ο λόγος 15:1 είναι του ink πάνω στο lime — το lime ΔΕΝ είναι ποτέ χρώμα κειμένου).
+     Draw-in 0 → 100% πλάτος μία φορά όταν το γονικό .reveal μπει στο viewport (.is-in)· σε reduced motion στατικό. */
+  .marker {
+    color: var(--ink);
+    padding: 0 0.12em;
+    background-image: linear-gradient(transparent 12%, #c7f94b 12%, #c7f94b 88%, transparent 88%);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  html[data-js] .reveal .marker {
+    background-size: 0% 100%;
+    transition: background-size 500ms ease-out 250ms;
+  }
+  html[data-js] .reveal.is-in .marker {
+    background-size: 100% 100%;
+  }
+
+  /* ── «Μια νύχτα με τους agents σας»: γραμμές στο 25% → 100% η μία μετά την άλλη (~500ms) ─────────────────── */
+  html[data-js] .feed-row {
+    opacity: 0.25;
+    transition: opacity 500ms ease-out;
+    transition-delay: calc(var(--i, 0) * 500ms + 300ms);
+  }
+  html[data-js] .reveal.is-in .feed-row {
+    opacity: 1;
+  }
+
+  /* ── Hairlines ───────────────────────────────────────────────────────── */
+  .rule-dark {
+    @apply border-white/10;
+  }
+  .rule-light {
+    @apply border-ink/10;
+  }
+
+  /* ── Range sliders (ROI calculator) ──────────────────────────────────
+     Το input είναι 44px ψηλό (hit area) · το ορατό track 6px ζωγραφίζεται
+     ως background στο κέντρο. Thumb 24px.                                    */
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    height: 44px;
+    margin: 0;
+    border-radius: 999px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 6px;
+    cursor: pointer;
+    touch-action: pan-y;
+    outline-offset: 2px;
+  }
+  .slider::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    height: 44px;
+    background: transparent;
+  }
+  .slider::-moz-range-track {
+    height: 44px;
+    background: transparent;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    margin-top: 10px;
+    border-radius: 999px;
+    background: var(--aura);
+    border: 4px solid var(--night-1);
+    box-shadow: 0 0 0 1px var(--aura);
+    transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+  .slider::-moz-range-thumb {
+    box-sizing: border-box;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--aura);
+    border: 4px solid var(--night-1);
+    box-shadow: 0 0 0 1px var(--aura);
+  }
+  .slider:active::-webkit-slider-thumb {
+    transform: scale(0.94);
+  }
+
+  /* Light (Round 4): thumb lime #C7F94B με 2px ink δακτύλιο (το thumb κουβαλά το 3:1 της κατάστασης)· fill lime, unfilled ink/15,
+     και 1px ink outline στο γεμάτο κομμάτι — όλα ζωγραφίζονται inline στο Calculator. Focus ring: ink 2px offset 3px. */
+  .slider-light::-webkit-slider-thumb {
+    box-sizing: border-box;
+    background: var(--volt);
+    border: 2px solid var(--ink);
+    box-shadow: none;
+  }
+  .slider-light::-moz-range-thumb {
+    box-sizing: border-box;
+    background: var(--volt);
+    border: 2px solid var(--ink);
+    box-shadow: none;
+  }
+  .slider-light:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .slider-light:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px var(--bone), 0 0 0 5px var(--ink);
+  }
+  .slider-light:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 3px var(--bone), 0 0 0 5px var(--ink);
+  }
+
+  /* Numeric input χωρίς native spinners (webkit + firefox) — κρατά inputmode="numeric". */
+  .no-spin {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  .no-spin::-webkit-outer-spin-button,
+  .no-spin::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* ── Mini UI previews (agents, services) ─────────────────────────────
+     Ορατά by default· κρύβονται ΜΟΝΟ με JS (html[data-js]) μέχρι να μπει
+     το preview στο viewport (.is-play). Reduced motion → τελική κατάσταση. */
+  html[data-js] .pv [data-step] {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 350ms ease-out, transform 350ms ease-out;
+    transition-delay: calc(var(--i, 0) * 420ms);
+  }
+  html[data-js] .pv.is-play [data-step] {
+    opacity: 1;
+    transform: none;
+  }
+  /* γραμμές/bars που «γεμίζουν» */
+  html[data-js] .pv [data-grow] {
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--i, 0) * 90ms + 300ms);
+  }
+  html[data-js] .pv.is-play [data-grow] {
+    transform: scaleY(1);
+  }
+  html[data-js] .pv [data-fill] {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 420ms ease-out;
+    transition-delay: calc(var(--i, 0) * 520ms + 250ms);
+  }
+  html[data-js] .pv.is-play [data-fill] {
+    transform: scaleX(1);
+  }
+  @media (max-width: 639px) {
+    html[data-js] .pv [data-fill-v] {
+      transform: scaleY(0);
+      transform-origin: top;
+    }
+    html[data-js] .pv.is-play [data-fill-v] {
+      transform: scaleY(1);
+    }
+  }
+  /* sparkline που «ζωγραφίζεται» */
+  html[data-js] .pv [data-draw] {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 900ms ease-out 300ms;
+  }
+  html[data-js] .pv.is-play [data-draw] {
+    stroke-dashoffset: 0;
+  }
+  html[data-js] .pv [data-tick] {
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 250ms ease-out, transform 250ms ease-out;
+    transition-delay: calc(var(--i, 0) * 520ms + 500ms);
+  }
+  html[data-js] .pv.is-play [data-tick] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Performance: τα sections κάτω από το hero δεν γίνονται render μέχρι να πλησιάσουν ──
+   content-visibility:auto κόβει το αρχικό layout/style (LCP). Οι εκτιμήσεις ύψους
+   (μετρημένες) κρατούν σωστό το scrollbar και το scroll_75· το "auto" θυμάται το πραγματικό
+   ύψος μόλις γίνει render. ΣΒΗΝΕΙ (data-ready) πριν από ΟΠΟΙΟΔΗΠΟΤΕ in-page jump ή deep link
+   (βλ. AnchorReady) ώστε τα anchors (#klisi κ.λπ.) να προσγειώνονται πάντα σωστά.
+   Μόνο με JS — χωρίς JS η σελίδα γίνεται render κανονικά. */
+html[data-js]:not([data-ready]) main > section:not(:first-child),
+html[data-js]:not([data-ready]) footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1000px;
+}
+/* Εκτιμήσεις = ύψος ΠΕΡΙΕΧΟΜΕΝΟΥ (το padding του section προστίθεται από πάνω). Μετρημένες σε 390 / 1440. */
+html[data-js]:not([data-ready]) #provlima { contain-intrinsic-size: auto 790px; }
+html[data-js]:not([data-ready]) #agents { contain-intrinsic-size: auto 3600px; }
+html[data-js]:not([data-ready]) #ypologismos { contain-intrinsic-size: auto 1380px; }
+html[data-js]:not([data-ready]) #ypiresies { contain-intrinsic-size: auto 1490px; }
+html[data-js]:not([data-ready]) #kladoi { contain-intrinsic-size: auto 1330px; }
+html[data-js]:not([data-ready]) #diadikasia { contain-intrinsic-size: auto 1480px; }
+html[data-js]:not([data-ready]) #pilot { contain-intrinsic-size: auto 1360px; }
+html[data-js]:not([data-ready]) #idrytes { contain-intrinsic-size: auto 710px; }
+html[data-js]:not([data-ready]) #erotiseis { contain-intrinsic-size: auto 830px; }
+html[data-js]:not([data-ready]) #klisi { contain-intrinsic-size: auto 1930px; }
+html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 450px; }
+@media (min-width: 1024px) {
+  html[data-js]:not([data-ready]) #provlima { contain-intrinsic-size: auto 490px; }
+  html[data-js]:not([data-ready]) #agents { contain-intrinsic-size: auto 2490px; }
+  html[data-js]:not([data-ready]) #ypologismos { contain-intrinsic-size: auto 730px; }
+  html[data-js]:not([data-ready]) #ypiresies { contain-intrinsic-size: auto 1350px; }
+  html[data-js]:not([data-ready]) #kladoi { contain-intrinsic-size: auto 1110px; }
+  html[data-js]:not([data-ready]) #diadikasia { contain-intrinsic-size: auto 620px; }
+  html[data-js]:not([data-ready]) #pilot { contain-intrinsic-size: auto 726px; }
+  html[data-js]:not([data-ready]) #idrytes { contain-intrinsic-size: auto 410px; }
+  html[data-js]:not([data-ready]) #erotiseis { contain-intrinsic-size: auto 610px; }
+  html[data-js]:not([data-ready]) #klisi { contain-intrinsic-size: auto 740px; }
+  html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 235px; }
+}
+
+/* Οριζόντια pill rows (Services / Industries): fade μόνο στην πλευρά με κι άλλο περιεχόμενο (vars από useEdgeFade).
+   Από lg+ (Services) / md+ (Industries) οι σειρές δεν scrollάρουν πια → χωρίς mask. */
+.fade-x {
+  --fl: 0px;
+  --fr: 28px;
+  mask-image: linear-gradient(90deg, transparent 0, #000 var(--fl), #000 calc(100% - var(--fr)), transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--fl), #000 calc(100% - var(--fr)), transparent 100%);
+}
+@media (min-width: 1024px) {
+  .fade-x-lg {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}
+@media (min-width: 768px) {
+  .fade-x-md {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}
+
+/* Οριζόντια chips χωρίς scrollbar, με fade δεξιά (mobile). */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.fade-right {
+  mask-image: linear-gradient(90deg, #000 85%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+}
+@media (min-width: 640px) {
+  .fade-right {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}
+
+/* Ο mini-bar του calculator έχει προτεραιότητα επί του sticky CTA. */
+html[data-minibar] .sticky-cta {
+  transform: translateY(100%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  /* Δίνει αέρα στο sticky CTA bar του mobile */
+  .pb-sticky {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ── Agents: ενεργή κάρτα ───────────────────────────────────────────────────────────────────────────────────────────
+   Ένα κωνικό gradient (μασκαρισμένο στο 1px περίγραμμα) σαρώνει ΜΙΑ φορά γύρω από την κάρτα (~2.4s) κι ύστερα μένει απαλή
+   λάμψη. Κινείται μόνο το --angle (registered @property) και το opacity ενός pseudo-element — κανένα layout property. */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.agent-card {
+  position: relative;
+  transition: box-shadow 400ms ease-out;
+}
+.agent-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: 2;
+  border-radius: 21px;
+  padding: 1px;
+  pointer-events: none;
+  opacity: 0;
+  background: conic-gradient(from var(--angle), rgba(34, 211, 238, 0) 0deg, rgba(34, 211, 238, 0) 250deg, #22d3ee 330deg, rgba(34, 211, 238, 0) 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.agent-card[data-active='true'] {
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4), 0 0 24px rgba(34, 211, 238, 0.12);
+}
+.agent-card[data-active='true']::before {
+  animation: agent-sweep 2400ms ease-in-out 1 both;
+}
+@keyframes agent-sweep {
+  0% {
+    --angle: 0deg;
+    opacity: 1;
+  }
+  80% {
+    --angle: 360deg;
+    opacity: 1;
+  }
+  100% {
+    --angle: 360deg;
+    opacity: 0;
+  }
+}
+
+/* ── Aura (hero + agents): 3 radial-gradient blobs, ΜΟΝΟ transform. Cyan/teal, opacity 0.10–0.18, κανένα mov. ────────
+   ΟΛΗ η τοποθέτηση γίνεται μέσα στο transform (--x/--y σε σταθερές μονάδες, ποτέ % του ύψους του section): έτσι ένα font swap που
+   αλλάζει το ύψος του hero κατά λίγα px δεν μετακινεί ποτέ τα blobs (τα layout shifts μετράνε θέση, όχι transform). */
+.aura-blob {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--w);
+  height: var(--w);
+  border-radius: 9999px;
+  will-change: transform;
+}
+.aura-a {
+  --w: min(900px, 150vw);
+  --x: -25vw;
+  --y: -280px;
+  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.16), rgba(34, 211, 238, 0) 100%);
+  animation: aura-a 26s ease-in-out infinite alternate;
+}
+.aura-b {
+  --w: min(1000px, 170vw);
+  --x: calc(135vw - var(--w));
+  --y: 360px;
+  background: radial-gradient(closest-side, rgba(14, 116, 144, 0.18), rgba(14, 116, 144, 0) 100%);
+  animation: aura-b 30s ease-in-out infinite alternate;
+}
+.aura-c {
+  --w: min(800px, 140vw);
+  --x: 18vw;
+  --y: 950px;
+  background: radial-gradient(closest-side, rgba(20, 184, 166, 0.12), rgba(20, 184, 166, 0) 100%);
+  animation: aura-c 32s ease-in-out infinite alternate;
+}
+/* Agents (πολύ ψηλό section): τα blobs απλώνονται σε όλο το ύψος */
+.aura-tall .aura-a { --y: 200px; }
+.aura-tall .aura-b { --y: 1500px; }
+.aura-tall .aura-c { --y: 2800px; }
+@media (min-width: 1024px) {
+  .aura-a { --y: -180px; }
+  .aura-b { --y: 220px; }
+  .aura-c { --y: 420px; }
+  .aura-tall .aura-a { --y: 150px; }
+  .aura-tall .aura-b { --y: 900px; }
+  .aura-tall .aura-c { --y: 1700px; }
+}
+.aura[data-paused='true'] .aura-blob {
+  animation-play-state: paused;
+}
+@keyframes aura-a {
+  from {
+    transform: translate3d(var(--x), var(--y), 0) scale(1);
+  }
+  to {
+    transform: translate3d(calc(var(--x) + 14%), calc(var(--y) + 10%), 0) scale(1.18);
+  }
+}
+@keyframes aura-b {
+  from {
+    transform: translate3d(var(--x), var(--y), 0) scale(1.08);
+  }
+  to {
+    transform: translate3d(calc(var(--x) - 16%), calc(var(--y) - 8%), 0) scale(0.92);
+  }
+}
+@keyframes aura-c {
+  from {
+    transform: translate3d(var(--x), var(--y), 0) scale(0.95);
+  }
+  to {
+    transform: translate3d(calc(var(--x) + 10%), calc(var(--y) - 12%), 0) scale(1.15);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* ── Κίνηση: μόνο fade-up + count-up, και ποτέ ενάντια στον χρήστη ─────── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  html[data-js] .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  /* Mini previews: στατικά, στην τελική κατάσταση. */
+  html[data-js] .pv [data-step],
+  html[data-js] .pv [data-grow],
+  html[data-js] .pv [data-fill],
+  html[data-js] .pv [data-fill-v],
+  html[data-js] .pv [data-tick] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  html[data-js] .pv [data-draw] {
+    stroke-dashoffset: 0 !important;
+    transition: none !important;
+  }
+  /* Marker: στατικό · night feed: όλες οι γραμμές 100% · card glow: ΧΩΡΙΣ σάρωμα, μόνο η σταθερή λάμψη · aura: στατικό */
+  html[data-js] .reveal .marker {
+    background-size: 100% 100%;
+    transition: none;
+  }
+  html[data-js] .feed-row {
+    opacity: 1 !important;
+    transition: none !important;
+  }
+  .agent-card::before {
+    display: none;
+  }
+  .aura-blob {
+    animation: none !important;
+    transform: translate3d(var(--x), var(--y), 0);
+  }
+  /* Το marquee σταματά εντελώς, γίνεται ΣΤΑΤΙΚΟ και τυλίγει σε γραμμές (χωρίς scroll, χωρίς άλμα). */
+  .marquee {
+    display: block;
+    overflow: visible !important;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  .marquee-track {
+    animation: none !important;
+    width: auto !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 12px;
+  }
+  .marquee-track[aria-hidden],
+  .marquee-repeat {
+    display: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
