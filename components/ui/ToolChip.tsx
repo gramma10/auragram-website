@@ -113,7 +113,7 @@ export function ToolChip({
   return (
     <li
       className={cn(
-        'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-[12px] font-medium leading-none',
+        'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-[12px] font-medium leading-none',
         light
           ? 'border-ink/10 bg-white text-ink'
           : tone === 'cyan'
@@ -131,13 +131,16 @@ export function ToolChips({
   ids,
   tone,
   surface,
+  nowrap = false,
 }: {
   ids: ToolId[];
   tone?: 'neutral' | 'cyan';
   surface?: 'dark' | 'light';
+  /** Μία σειρά (mobile) — μέσα σε <ChipRow> που κάνει οριζόντιο scroll· από sm+ τυλίγει κανονικά. */
+  nowrap?: boolean;
 }) {
   return (
-    <ul className="flex flex-wrap gap-1.5">
+    <ul className={nowrap ? 'flex flex-nowrap gap-1.5 sm:flex-wrap' : 'flex flex-wrap gap-1.5'}>
       {ids.map((id) => (
         <ToolChip key={id} id={id} tone={tone} surface={surface} />
       ))}

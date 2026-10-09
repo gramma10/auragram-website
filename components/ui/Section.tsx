@@ -15,6 +15,7 @@ export function Section({
   grid = false,
   mesh,
   before,
+  clip = false,
 }: {
   id?: string;
   tone: 'dark' | 'light';
@@ -26,13 +27,18 @@ export function Section({
   mesh?: boolean;
   /** Διακοσμητικό στρώμα ΠΡΙΝ από το υπόλοιπο περιεχόμενο (π.χ. <Aura />). Το section χρειάζεται `isolate`. */
   before?: ReactNode;
+  /**
+   * overflow-x: clip αντί για overflow: hidden. Το hidden/auto σε πρόγονο κάνει τον πρόγονο scroll container και ΣΠΑΕΙ το
+   * `position: sticky` των απογόνων (π.χ. το stacking των agent cards)· το clip κόβει οριζόντια χωρίς να δημιουργεί scroll container.
+   */
+  clip?: boolean;
 }) {
   const showMesh = mesh ?? tone === 'light';
   return (
     <section
       id={id}
       className={cn(
-        'relative overflow-hidden scroll-mt-24',
+        clip ? 'relative overflow-x-clip scroll-mt-24' : 'relative overflow-hidden scroll-mt-24',
         tone === 'dark' ? 'surface-dark' : 'surface-light on-light',
         grid && 'grid-bg',
         // 72px mobile / 128px desktop · gutter 16px / 24px

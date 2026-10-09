@@ -8,7 +8,7 @@ import { AgentsFeed } from './AgentsFeed';
 
 export function Agents() {
   return (
-    <Section tone="dark" id="agents" grid className="isolate" before={<Aura tall />}>
+    <Section tone="dark" id="agents" grid clip className="isolate" before={<Aura tall />}>
       <Reveal>
         <Eyebrow tone="dark">{agentsSection.eyebrow}</Eyebrow>
         <H2 tone="dark" className="max-w-3xl pt-6">

@@ -427,7 +427,7 @@ html[data-js]:not([data-ready]) footer {
 }
 /* Εκτιμήσεις = ύψος ΠΕΡΙΕΧΟΜΕΝΟΥ (το padding του section προστίθεται από πάνω). Μετρημένες σε 390 / 1440. */
 html[data-js]:not([data-ready]) #provlima { contain-intrinsic-size: auto 790px; }
-html[data-js]:not([data-ready]) #agents { contain-intrinsic-size: auto 3600px; }
+html[data-js]:not([data-ready]) #agents { contain-intrinsic-size: auto 3100px; }
 html[data-js]:not([data-ready]) #ypologismos { contain-intrinsic-size: auto 1380px; }
 html[data-js]:not([data-ready]) #ypiresies { contain-intrinsic-size: auto 1490px; }
 html[data-js]:not([data-ready]) #kladoi { contain-intrinsic-size: auto 1330px; }
@@ -439,7 +439,7 @@ html[data-js]:not([data-ready]) #klisi { contain-intrinsic-size: auto 1930px; }
 html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 450px; }
 @media (min-width: 1024px) {
   html[data-js]:not([data-ready]) #provlima { contain-intrinsic-size: auto 490px; }
-  html[data-js]:not([data-ready]) #agents { contain-intrinsic-size: auto 2490px; }
+  html[data-js]:not([data-ready]) #agents { contain-intrinsic-size: auto 2470px; }
   html[data-js]:not([data-ready]) #ypologismos { contain-intrinsic-size: auto 730px; }
   html[data-js]:not([data-ready]) #ypiresies { contain-intrinsic-size: auto 1350px; }
   html[data-js]:not([data-ready]) #kladoi { contain-intrinsic-size: auto 1110px; }
@@ -467,6 +467,12 @@ html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 450px; }
 }
 @media (min-width: 768px) {
   .fade-x-md {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}
+@media (min-width: 640px) {
+  .fade-x-sm {
     mask-image: none;
     -webkit-mask-image: none;
   }
@@ -539,6 +545,35 @@ html[data-minibar] .sticky-cta {
 .agent-card[data-active='true']::before {
   animation: agent-sweep 2400ms ease-in-out 1 both;
 }
+/* ── Agents: stacking cards (sticky deck) ────────────────────────────────────────────────────────────────────────────
+   Κάθε κάρτα είναι sticky: η N κολλά στο top = (clearance του top bar) + N × 10px, ώστε οι άκρες των προηγούμενων να «κρυφοκοιτάνε»
+   πάνω από την τράπουλα. Το scale (~0.94), το fade του ΠΕΡΙΕΧΟΜΕΝΟΥ ([data-content] → opacity 0) και το dim του περιγράμματος
+   ([data-edge] → 40%) των καλυμμένων καρτών γράφονται από ΕΝΑΝ passive, rAF-throttled scroll handler (AgentsCards) — όχι CSS scroll
+   timelines (αναξιόπιστα σε iOS/Instagram WebKit). Μόνο transform + opacity. Χωρίς JS: δουλεύει το sticky, όχι το fade. */
+.agent-stack {
+  --stack-top: 88px; /* top bar: 12 + 60 = 72px + 16px αέρας */
+}
+@media (min-width: 640px) {
+  .agent-stack {
+    --stack-top: 100px; /* top bar: 16 + 68 = 84px + 16px */
+  }
+}
+.agent-stack-card {
+  position: sticky;
+  top: calc(var(--stack-top) + var(--i, 0) * 10px);
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+.agent-stack-card [data-content],
+.agent-stack-card [data-edge] {
+  will-change: opacity;
+}
+.agent-stack-card:focus-visible {
+  outline: 2px solid var(--aura);
+  outline-offset: 3px;
+  border-radius: 20px;
+}
+
 @keyframes agent-sweep {
   0% {
     --angle: 0deg;
@@ -671,6 +706,17 @@ html[data-minibar] .sticky-cta {
   }
   .agent-card::before {
     display: none;
+  }
+  /* Reduced motion: ΚΑΝΕΝΑ sticky stacking, κανένα scale/fade — οι κάρτες είναι μια κανονική κάθετη λίστα */
+  .agent-stack-card {
+    position: static;
+    transform: none !important;
+    will-change: auto;
+  }
+  .agent-stack-card [data-content],
+  .agent-stack-card [data-edge] {
+    opacity: 1 !important;
+    will-change: auto;
   }
   .aura-blob {
     animation: none !important;
