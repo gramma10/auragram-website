@@ -7,6 +7,9 @@ const blockIndexing =
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Προαιρετικός ξεχωριστός φάκελος build (NEXT_DIST_DIR=.next-test): επιτρέπει build/start για δοκιμές ΧΩΡΙΣ να πειράξει το .next ενός
+  // `next dev` που τρέχει ταυτόχρονα. Χωρίς την μεταβλητή → το default `.next`.
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   images: {
     formats: ['image/avif', 'image/webp'],
   },
