@@ -86,9 +86,11 @@ const serviceJsonLd = {
   },
 };
 
+// suppressHydrationWarning στο <html>: το inline script στο <head> βάζει data-js / data-ready ΠΡΙΝ το hydration — αλλιώς το React (dev) τα
+// αναφέρει ως «Extra attributes from the server» (αυτό ήταν το «1 error» του Next dev overlay).
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="el" className={`${display.variable} ${body.variable} ${mono.variable}`}>
+    <html lang="el" className={`${display.variable} ${body.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
         {/*
           Σηματοδοτεί ότι τρέχει JavaScript, πριν το πρώτο paint.
