@@ -30,45 +30,40 @@ Copy lives in `lib/content.ts` (industry data in `lib/industries.ts`).
   - Remove `agent_switch` from `analytics.ts` (no more emitters).
 - Remove the agent scenario data that only the switcher used.
 
-## 1. Accent rule v3: the accent follows the surface
+## 1. Palette v4: one brand colour, taken from the logo (lime is retired)
 
-This replaces the Round 2 "all buttons cyan" rule.
+The logo mark is **silver metal with a cyan → violet glow**. Lime appears nowhere in it, and next to cyan it made the site read as two brands. **Remove lime from the site entirely**, including the Problem section tags and callout, sliders, nodes, ✓ icons and the `volt` token. Replace it with this system:
 
-| Surface the element sits on | Accent | Buttons | Highlights |
-|---|---|---|---|
-| **Dark** (`#0A1020…`): dark sections, the nav, the mobile dock, the bottom sheet | **cyan `#22D3EE`** | cyan fill, ink text | cyan |
-| **Light** (`#FAFAF7`, white cards): light sections, and the white form card even inside a dark section | **lime `#C7F94B`** | **lime fill, ink `#0F1720` text** | lime |
+| Token | Value | Use |
+|---|---|---|
+| `aura` | `#22D3EE` | **The brand colour.** Every CTA button on every surface (dark and light), highlights on dark |
+| `aura-deep` | `#0E7490` | Cyan for graphics, links, labels and ✓ icons **on light surfaces** (≥ 4.5:1 on `#FAFAF7` and white) |
+| `aura-tint` | `#ECFEFF` | Soft cyan box background on light |
+| `aura-line` | `#A5F3FC` | Soft cyan borders and the **marker highlight** on light |
+| `halo` | `#8B7CF6` (violet from the logo glow) | **Only** inside the moving aura background (item 5) and the logo. Never on buttons, text, borders, or as a section/gradient background |
 
-- **Lime on light surfaces is used for:**
-  - CTA buttons
-  - slider fills
-  - ✓ icons
-  - small dots and nodes
-  - eyebrow rules
-  - the new **marker highlight** (below)
-- **Lime is never a text colour and never a thin line on its own on light backgrounds**, because it fails contrast.
-- **Lime buttons on light:**
-  - ink label (≈ 15:1)
-  - a 1px `ink/10` border, so the button edge reads on `#FAFAF7`
-  - **focus ring on light surfaces is ink, 2px, offset 3px** (a lime ring fails)
-  - the hover glow becomes a slight darkening (`#B8EA3A`)
-- **Calculator sliders:**
-  - filled track lime
-  - unfilled track `ink/15`
-  - **thumb lime with a 2px ink ring**, so the thumb carries the 3:1 state contrast
-  - add an inset 1px `ink/35` outline on the filled part, so filled vs unfilled also passes 3:1
-  - measure and report both pairs
-- The nav CTA and the dock CTA stay cyan, since they sit on dark surfaces, even when the page behind them is light. This is accepted.
-- **Buttons to switch to lime** (because they sit on light surfaces):
-  - calculator result card CTA
-  - Industries CTA
-  - booking form submit
-  - any other CTA on a light section or white card
-- The Problem section already uses lime; keep it.
+**Buttons:**
+- **One CTA colour everywhere: cyan fill, ink `#0A1020` label.** This restores the Round 2 rule.
+- On light surfaces, add a 1px `rgba(14,116,144,0.35)` border so the button edge reads on `#FAFAF7`.
+- The hover glow stays the same on both surfaces.
+- **Focus ring:** cyan on dark, `aura-deep` 2px offset 3px on light.
+
+**Calculator sliders:**
+- filled track `aura-deep`, unfilled track `ink/15`
+- **thumb `aura` (cyan) with a 2px ink ring**
+- measure and report the filled/unfilled pair and the thumb/track pair (≥ 3:1)
+
+**Problem section** (was lime):
+- the time tags (`11:40`, `21:00`, `×30`, `.xlsx`) become `aura-tint` pills with an `aura-line` border and ink text
+- the callout bar's left rule becomes `aura-deep`
+
+**Eyebrow rules, dots and nodes on light:** `aura-deep`.
+
+The nav and dock stay as they are (cyan on dark), so the CTA is now the same colour in every viewport.
 
 **Marker highlight** (new, light sections only):
-- Words wrapped as `{ m: '…' }` in the copy source (same idea as `Rich` `{ s }`, never regex) render with a lime background behind ink text.
-- Styling: `background: linear-gradient(transparent 12%, #C7F94B 12%, #C7F94B 88%, transparent 88%)`, `padding: 0 .12em`, `box-decoration-break: clone`.
+- Words wrapped as `{ m: '…' }` in the copy source (same idea as `Rich` `{ s }`, never regex) render with an `aura-line` (#A5F3FC) band behind ink text.
+- Styling: `background: linear-gradient(transparent 12%, #A5F3FC 12%, #A5F3FC 88%, transparent 88%)`, `padding: 0 .12em`, `box-decoration-break: clone`.
 - Optional draw-in: the background-size animates from 0% to 100% width once on view, over 500ms. Under reduced motion it is static.
 - **Apply to exactly these phrases:**
   - Problem H2 line 2: «Έχετε πρόβλημα με {m: τον χρόνο}.»
@@ -99,7 +94,7 @@ This replaces the Round 2 "all buttons cyan" rule.
 | 8 | **Founders** (moved up from after Pilot) | light |
 | 9 | Pilot | dark |
 | 10 | FAQ | **light** (restyle if needed) |
-| 11 | Booking | **dark**: the section background goes dark, and the form stays a **white card** (light surface → lime submit button) |
+| 11 | Booking | **dark**: the section background goes dark, and the form stays a **white card** (cyan submit button with the light-surface border) |
 
 - Update nav order, anchors and `contain-intrinsic-size` estimates.
 - No two adjacent sections may share a tone. Verify this programmatically.
@@ -111,11 +106,11 @@ Feedback: the current panel is too much (five boxes in a heavy dark card) and un
 **Structure per industry:**
 1. **Pills row** on the light background:
    - inactive: white bg, `ink/10` border, ink text
-   - active: **lime bg, ink text**
+   - active: **ink `#0A1020` bg, white text** (like the reference's black pill)
    - icons in ink
    - ‹ › buttons and the «01 / 06» counter stay
 2. **White panel card:** `#fff`, 1px `ink/8` border, soft shadow `0 1px 2px rgba(15,23,32,.04), 0 8px 24px rgba(15,23,32,.06)`, radius as other cards. It contains:
-   - eyebrow «ΠΩΣ ΔΟΥΛΕΥΕΙ ΣΕ» (ink-soft, with a lime rule)
+   - eyebrow «ΠΩΣ ΔΟΥΛΕΥΕΙ ΣΕ» (ink-soft, with an `aura-deep` rule)
    - title (H3) and subtitle (ink-soft)
 3. **Two boxes, side by side** (stacked on mobile with a ↓ arrow between):
    - **«✕ ΣΗΜΕΡΑ»:**
@@ -124,8 +119,8 @@ Feedback: the current panel is too much (five boxes in a heavy dark card) and un
      - bullets in ink with **bold lead:** text
      - tool chips at the bottom
    - **«✓ ΜΕ ΤΗΝ AURAGRAM»:**
-     - bg `#F7FEE7`, border `#C7F94B`
-     - label and ✓ in `#3F6212`
+     - bg `aura-tint` `#ECFEFF`, border `aura-line` `#A5F3FC`
+     - label and ✓ in `aura-deep` `#0E7490`
      - bullets in ink with **bold lead:** text
      - tool chips at the bottom
    - Between them on desktop: a 40px circular arrow (white, `ink/10` border, ink arrow).
@@ -134,9 +129,9 @@ Feedback: the current panel is too much (five boxes in a heavy dark card) and un
    - one rounded strip (bg `#F4F4F0`) with 3 equal columns and thin vertical dividers
    - big ink number (`clamp(28px, 5vw, 40px)`, tabular) with a small uppercase label under it
    - estimates carry the «ΕΚΤΙΜΗΣΗ» pill
-   - the euro ROI stat gets the lime marker highlight behind the number
+   - the euro ROI stat gets the cyan marker highlight behind the number
    - one muted formula line under the strip (when an estimate exists)
-5. Bottom line + lime CTA (as before).
+5. Bottom line + the standard cyan CTA.
 
 **Remove** the per-industry live feed and the separate RoiBlock from this section. The feed concept moves to the Agents section (item 4).
 
@@ -218,7 +213,7 @@ A single card below the four agent cards, above the section CTA.
 
 ## 5. Moving "aura" background (hero + agents only)
 
-- Two or three large soft radial-gradient blobs behind the content, in **cyan/teal only**: `#22D3EE`, `#0E7490`, `#14B8A6`. Opacity 0.10–0.18. **No purple.**
+- Two or three large soft radial-gradient blobs behind the content, echoing the logo's glow: **cyan `#22D3EE`, deep cyan `#0E7490`, and one violet `halo` `#8B7CF6`** blob. Opacity 0.10–0.18 (violet ≤ 0.14). The violet appears only here, as a soft glow, never as a hard gradient or a section background.
 - **Implementation:**
   - the blobs are `radial-gradient` backgrounds on absolutely positioned elements (not `filter: blur`)
   - animate only `transform` (translate + scale), 24–32s, ease-in-out, alternate, with different durations per blob so the motion never visibly loops
@@ -273,7 +268,7 @@ Replace the text-only stack list with a logo grid, grouped. Each item is a card 
 ## Definition of done
 
 - Typecheck and lint pass. Variant B and the compare code are fully gone, and no dead imports remain.
-- Contrast report covers every new pair: lime button/ink, the slider pairs, the rose and lime box labels, `#FCA5A5` on the card, and brand icons on pills.
+- Contrast report covers every new pair: cyan button/ink on light, the slider pairs, the rose and cyan box labels, the Problem tags, `#FCA5A5` on the card, and brand icons on pills.
 - No adjacent sections share a tone (verified in code).
 - No element overflows at 360/375/390/1440. CLS < 0.1 over a full read-through. Industries panel switching causes no shift.
 - Mobile heights at 390: Industries ≤ ~1.6 screens. Report the Agents section height with the feed added.

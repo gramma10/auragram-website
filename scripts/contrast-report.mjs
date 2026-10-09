@@ -1,4 +1,4 @@
-// Contrast report για κάθε ζεύγος χρωμάτων του Round 4.  Τρέξτε:  node scripts/contrast-report.mjs
+// Contrast report για κάθε ζεύγος χρωμάτων — Round 4 + Palette v4 (cyan / aura-deep / aura-tint / aura-line / halo).  Τρέξτε:  node scripts/contrast-report.mjs
 // Κανόνας: κείμενο ≥ 4.5:1 · γραφικά UI / ενδείξεις κατάστασης ≥ 3:1. Τα alpha χρώματα υπολογίζονται πάνω στην πραγματική επιφάνεια.
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -13,9 +13,10 @@ const ratio = (a, b) => {
 };
 const over = (fg, a, bg) => fg.map((c, i) => c + (bg[i] - c) * (1 - a));
 
-const INK = hex('0F1720'), INK_SOFT = hex('5A6270'), LIME = hex('C7F94B'), LIME_HOVER = hex('B8EA3A');
+const INK = hex('0F1720'), INK_SOFT = hex('5A6270'), NIGHT_INK = hex('0A1020');
 const BONE = hex('FAFAF7'), BONE2 = hex('F3F3EE'), WHITE = hex('FFFFFF'), STRIP = hex('F4F4F0');
-const NIGHT = hex('0A1020'), NIGHT2 = hex('0E1628'), CYAN = hex('22D3EE'), FG = hex('B4BDCB'), FGDIM = hex('8C96A8');
+const NIGHT = hex('0A1020'), NIGHT2 = hex('0E1628'), CYAN = hex('22D3EE'), CYAN_HOVER = hex('5EEAF7'), FG = hex('B4BDCB'), FGDIM = hex('8C96A8');
+const DEEP = hex('0E7490'), TINT = hex('ECFEFF'), LINE = hex('A5F3FC'), HALO = hex('8B7CF6');
 const ROSE = hex('FCA5A5'), ROSE_RGB = [248, 113, 113];
 
 const rows = [];
@@ -24,40 +25,77 @@ const add = (group, pair, fg, bg, min, note = '') => {
   rows.push({ group, pair, ratio: r, min, ok: r >= min, note });
 };
 
-// ── 1. Lime button / marker ──
-add('Lime on light', 'Button label: ink on lime #C7F94B', INK, LIME, 4.5);
-add('Lime on light', 'Button label (hover): ink on #B8EA3A', INK, LIME_HOVER, 4.5);
-add('Lime on light', 'Marker highlight: ink on lime', INK, LIME, 4.5);
-add('Lime on light', 'Active pill: ink on lime', INK, LIME, 4.5);
-add('Lime on light', 'Button EDGE: lime vs #FAFAF7 (needs the ink/10 border — lime alone is a thin-line fail)', LIME, BONE, 3, 'EXPECTED FAIL → solved by 1px ink/10 border + ink label; lime is never text/thin line');
-add('Lime on light', 'Button edge incl. ink/10 border vs #FAFAF7', over(INK, 0.1, BONE), BONE, 1.0, 'informational (decorative edge; the label carries the 4.5:1)');
-add('Lime on light', 'Focus ring on light: ink vs #FAFAF7', INK, BONE, 3);
-add('Lime on light', 'Focus ring on light: ink vs white card', INK, WHITE, 3);
-add('Lime on light', 'Focus ring (rejected): lime vs #FAFAF7', LIME, BONE, 3, 'EXPECTED FAIL — this is why the ring is ink');
+// ── 1. CTA (cyan everywhere) ──
+add('CTA (cyan on every surface)', 'Label: ink #0A1020 on cyan #22D3EE', NIGHT_INK, CYAN, 4.5);
+add('CTA (cyan on every surface)', 'Label (hover): ink on #5EEAF7', NIGHT_INK, CYAN_HOVER, 4.5);
+add('CTA (cyan on every surface)', 'Light surface: cyan fill vs #FAFAF7', CYAN, BONE, 3, 'informational — the control is identified by its ink label (≥ 4.5:1) + the 1px border; fill alone is < 3:1');
+add('CTA (cyan on every surface)', 'Light surface: cyan fill vs white card', CYAN, WHITE, 3, 'informational — same as above');
+add('CTA (cyan on every surface)', 'Light surface: border rgba(14,116,144,.35) over #FAFAF7 vs #FAFAF7', over(DEEP, 0.35, BONE), BONE, 3, 'informational — brief-specified edge; it reinforces the cyan fill but does not reach 3:1 by itself');
+add('CTA (cyan on every surface)', 'Light surface: border rgba(14,116,144,.35) over cyan fill vs cyan', over(DEEP, 0.35, CYAN), CYAN, 1.0, 'informational (inner edge)');
+add('CTA (cyan on every surface)', 'Focus ring on light: aura-deep vs #FAFAF7', DEEP, BONE, 3);
+add('CTA (cyan on every surface)', 'Focus ring on light: aura-deep vs white card', DEEP, WHITE, 3);
+add('CTA (cyan on every surface)', 'Focus ring on dark: cyan vs #0A1020', CYAN, NIGHT, 3);
 
-// ── 2. Sliders (calculator section bg = #F3F3EE) ──
+// ── 2. aura-deep on light ──
+add('aura-deep on light', 'aura-deep #0E7490 vs #FAFAF7 (text, links, labels, ✓)', DEEP, BONE, 4.5);
+add('aura-deep on light', 'aura-deep vs white', DEEP, WHITE, 4.5);
+add('aura-deep on light', 'aura-deep vs #F3F3EE (calculator bg)', DEEP, BONE2, 4.5);
+add('aura-deep on light', 'aura-deep vs #F4F4F0 (stats strip)', DEEP, STRIP, 4.5);
+add('aura-deep on light', 'aura-deep vs aura-tint #ECFEFF', DEEP, TINT, 4.5);
+add('aura-deep on light', 'Eyebrow rule / dots / underlines: aura-deep vs #FAFAF7 (graphic ≥ 3)', DEEP, BONE, 3);
+add('aura-deep on light', 'Callout rule (Problem): aura-deep vs #FAFAF7', DEEP, BONE, 3);
+add('aura-deep on light', 'Marker band: ink on aura-line #A5F3FC', INK, LINE, 4.5);
+add('aura-deep on light', 'Marker band: aura-line vs #FAFAF7 (decorative highlight)', LINE, BONE, 1.0, 'decorative highlight — text on it is ink (above)');
+add('aura-deep on light', 'Problem tags: ink on aura-tint #ECFEFF', INK, TINT, 4.5);
+add('aura-deep on light', 'Problem tags: aura-line border vs #FAFAF7', LINE, BONE, 1.0, 'decorative pill border; text is ink on aura-tint');
+
+// ── 3. Sliders (calculator section bg = #F3F3EE) ──
 const track = over(INK, 0.15, BONE2);
-add('Slider', 'Unfilled track ink/15 vs section bg', track, BONE2, 3, 'brief-mandated ink/15 → informational: value is carried by thumb + the number');
-add('Slider', 'Thumb: 2px ink ring vs section bg', INK, BONE2, 3);
-add('Slider', 'Thumb fill lime vs ink ring', LIME, INK, 3);
-for (const a of [0.35, 0.5, 0.6, 0.7]) {
-  const outline = over(INK, a, BONE2);
-  add('Slider', `Filled-part outline ink/${Math.round(a * 100)} vs unfilled track`, outline, track, 3, a === 0.35 ? 'brief value' : '');
-  add('Slider', `Filled-part outline ink/${Math.round(a * 100)} vs section bg`, outline, BONE2, 3, a === 0.35 ? 'brief value' : '');
-}
-add('Slider', 'Filled lime vs its ink/60 outline (the edge that makes the fill readable)', LIME, over(INK, 0.6, BONE2), 3);
+add('Slider', 'FILLED vs UNFILLED: aura-deep fill vs ink/15 track', DEEP, track, 3);
+add('Slider', 'Filled track vs section bg: aura-deep vs #F3F3EE', DEEP, BONE2, 3);
+add('Slider', 'Unfilled track vs section bg: ink/15 vs #F3F3EE', track, BONE2, 3, 'brief-specified ink/15 → informational: the thumb + the value carry the state, the unfilled run is not required to identify the control');
+add('Slider', 'THUMB vs TRACK: ink ring vs unfilled track', INK, track, 3);
+add('Slider', 'THUMB vs TRACK: ink ring vs filled track (aura-deep)', INK, DEEP, 3);
+add('Slider', 'Thumb ring vs section bg: ink vs #F3F3EE', INK, BONE2, 3);
+add('Slider', 'Thumb fill cyan vs its ink ring', CYAN, INK, 3);
+add('Slider', 'Thumb fill cyan vs unfilled track (no ring)', CYAN, track, 3, 'informational — the 2px ink ring is what carries the thumb');
+add('Slider', 'Thumb fill cyan vs filled track (no ring)', CYAN, DEEP, 1.0, 'informational — the 2px ink ring is what carries the thumb');
+add('Slider', 'Focus ring: aura-deep vs #F3F3EE', DEEP, BONE2, 3);
 
-// ── 3. Industries boxes ──
+// ── 3b. Industries ──
+add('Industries', '✓ ΜΕ ΤΗΝ AURAGRAM label: aura-deep on aura-tint', DEEP, TINT, 4.5);
 add('Industries', '✕ ΣΗΜΕΡΑ label #B42318 on #FEF3F2', hex('B42318'), hex('FEF3F2'), 4.5);
-add('Industries', '✓ ΜΕ ΤΗΝ AURAGRAM label #3F6212 on #F7FEE7', hex('3F6212'), hex('F7FEE7'), 4.5);
+add('Industries', 'Bullets: ink on aura-tint', INK, TINT, 4.5);
 add('Industries', 'Bullets: ink on #FEF3F2', INK, hex('FEF3F2'), 4.5);
-add('Industries', 'Bullets: ink on #F7FEE7', INK, hex('F7FEE7'), 4.5);
+add('Industries', 'Active pill: white on ink #0A1020', WHITE, NIGHT_INK, 4.5);
+add('Industries', 'Inactive pill: ink on white', INK, WHITE, 4.5);
 add('Industries', 'Stat label: ink-soft on #F4F4F0 strip', INK_SOFT, STRIP, 4.5);
 add('Industries', 'Stat number: ink on #F4F4F0 strip', INK, STRIP, 4.5);
 add('Industries', 'Subtitle / formula: ink-soft on white panel', INK_SOFT, WHITE, 4.5);
-add('Industries', 'Pill (inactive): ink on white', INK, WHITE, 4.5);
 add('Industries', 'ΕΚΤΙΜΗΣΗ pill (light): ink-soft on #F4F4F0', INK_SOFT, STRIP, 4.5);
-add('Industries', 'Lime box border #C7F94B vs #F7FEE7 (UI edge)', LIME, hex('F7FEE7'), 1.0, 'decorative border of a tinted box; text inside is ink/#3F6212');
+add('Industries', 'aura-line border of the ✓ box vs aura-tint', LINE, TINT, 1.0, 'decorative box border; text inside is aura-deep / ink');
+
+// ── 3c. Violet halo (aura background): text on top of the glow ──
+const halo = (a) => over(HALO, a, NIGHT2);
+add('Halo (violet) behind dark content', 'Body text fg on night + violet 14% glow', FG, halo(0.14), 4.5, 'worst case: full-strength blob centre');
+add('Halo (violet) behind dark content', 'Muted fg-dim #8C96A8 on night + violet 14% glow', FGDIM, halo(0.14), 4.5);
+add('Halo (violet) behind dark content', 'Cyan text on night + violet 14% glow', CYAN, halo(0.14), 4.5);
+add('Halo (violet) behind dark content', 'White H1 on night + violet 14% glow', WHITE, halo(0.14), 4.5);
+
+// ── 3d. Grid behind text (light sections) — TEXT-SAFE: κάτω από μπλοκ κειμένου nodes/links ≤ 30% alpha, trails/heads/spotlight = 0 ──
+// nodes: 0.225 (max, με flicker) × 0.30 = 0.0675 · links: 0.17 × 0.30 = 0.051 (πριν το distance falloff) · το spotlight ΔΕΝ βάφει πάνω σε κείμενο
+const nodeT = 0.225 * 0.3, linkT = 0.17 * 0.3;
+const gNode = over(INK, nodeT, BONE), gNodeLink = over(INK, linkT, over(INK, nodeT, BONE)), gNodeW = over(INK, nodeT, WHITE), gNodeLinkW = over(INK, linkT, over(INK, nodeT, WHITE));
+add('Grid behind text (text-safe canvas)', 'ink-soft on plain #FAFAF7 (nominal)', INK_SOFT, BONE, 4.5);
+add('Grid behind text (text-safe canvas)', 'ink-soft directly under a NODE dot (α 0.0675 after text-safe)', INK_SOFT, gNode, 4.5);
+add('Grid behind text (text-safe canvas)', 'ink-soft under node + link overlapping (worst case)', INK_SOFT, gNodeLink, 4.5);
+add('Grid behind text (text-safe canvas)', 'ink-soft on white panel under node + link overlapping', INK_SOFT, gNodeLinkW, 4.5);
+add('Grid behind text (text-safe canvas)', 'ink body text under node + link overlapping', INK, gNodeLink, 4.5);
+add('Grid behind text (text-safe canvas)', 'Spotlight centre over text: no tint (spotMask = 0) → ink-soft on #FAFAF7 + node α', INK_SOFT, gNode, 4.5, 'tint is suppressed over text blocks; only the faded node remains');
+add('Grid behind text (text-safe canvas)', 'Signal trail/head over text: suppressed (0) → same as node only', INK_SOFT, gNode, 4.5);
+add('Grid behind text (text-safe canvas)', 'REFERENCE (rejected): stacked trail aura-deep 0.18 + node under text', INK_SOFT, over(DEEP, 0.6 * 0.3, gNode), 4.5, 'EXPECTED FAIL — the reason trails vanish entirely over text');
+add('Grid behind text (text-safe canvas)', 'REFERENCE (before text-safe): ink-soft under a node at α 0.225', INK_SOFT, over(INK, 0.225, BONE), 4.5, 'EXPECTED FAIL — what text-safe fixes');
+add('Grid behind text (text-safe canvas)', 'Signal head cyan vs #FAFAF7 in the open (decorative)', CYAN, BONE, 1.0, 'decorative — carries no information');
 
 // ── 4. Agents (dark surface) ──
 const cardBg = (rgb, a) => over(rgb, a, NIGHT2);
@@ -76,7 +114,7 @@ add('Light misc', 'Eyebrow ink-soft on #FAFAF7', INK_SOFT, BONE, 4.5);
 add('Light misc', 'Counter ink-soft on #FAFAF7', INK_SOFT, BONE, 4.5);
 add('Light misc', 'FAQ answer ink/75 on #FAFAF7', over(INK, 0.75, BONE), BONE, 4.5);
 add('Light misc', 'FAQ question (closed) ink/70 on #FAFAF7', over(INK, 0.7, BONE), BONE, 4.5);
-add('Light misc', 'Eyebrow lime capsule vs #FAFAF7 (shape + ink/10 border, not a thin line)', LIME, BONE, 1.0, 'decorative marker; text next to it is ink-soft');
+add('Light misc', 'Eyebrow rule: aura-deep vs #FAFAF7 (graphic)', DEEP, BONE, 3);
 
 // ── 6. Brand icons on pills ──
 const surfaces = {
@@ -106,7 +144,7 @@ for (const [name, key] of Object.entries(icons)) {
 
 // ── output ──
 const fmt = (n) => n.toFixed(2) + ':1';
-let md = '# Round 4 — contrast report\n\nText ≥ 4.5:1 · UI graphics ≥ 3:1. Alpha colours are composited on the real surface.\n\n';
+let md = '# Round 4 — Palette v4 contrast report\n\nText ≥ 4.5:1 · UI graphics ≥ 3:1. Alpha colours are composited on the real surface.\n\n';
 let group = '';
 for (const r of rows) {
   if (r.group !== group) {
