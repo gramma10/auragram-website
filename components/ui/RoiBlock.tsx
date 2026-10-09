@@ -49,7 +49,7 @@ export function EstimatePill({
  *  • Χωρίς layout shift στην εναλλαγή: tabular numerals + min-width στο νούμερο· το label/formula έχουν σταθερό αριθμό γραμμών
  *    στη συνηθισμένη περίπτωση και το νούμερο δεσμεύει το πλάτος της τελικής τιμής (AnimatedNumber).
  *  • Count-up όταν μπει στο viewport ΚΑΙ `run` (π.χ. ενεργό tab)· στατικό σε reduced motion.
- *  • dark: cyan border 35% + background 6% · light: ink border + dark-cyan #0891B2 νούμερο.
+ *  • dark: cyan border 35% + background 6% · light: ink border + aura-deep #0E7490 νούμερο.
  */
 export function RoiBlock({
   spec,
@@ -100,7 +100,7 @@ export function RoiBlock({
           <span
             className={cn(
               'inline-block min-w-[6ch] font-display text-[clamp(28px,6vw,36px)] font-extrabold leading-none tracking-tight tnum',
-              dark ? (estimate ? 'text-white' : 'text-aura') : 'text-[#0891B2]'
+              dark ? (estimate ? 'text-white' : 'text-aura') : 'text-aura-deep'
             )}
           >
             {estimate && '≈ '}
@@ -112,7 +112,7 @@ export function RoiBlock({
           {estimate && <EstimatePill tone={tone} />}
         </p>
       ) : (
-        <p className={cn('pt-2.5 font-display text-[22px] font-extrabold leading-tight tracking-tight', dark ? 'text-aura' : 'text-[#0891B2]')}>
+        <p className={cn('pt-2.5 font-display text-[22px] font-extrabold leading-tight tracking-tight', dark ? 'text-aura' : 'text-aura-deep')}>
           {spec.text}
         </p>
       )}
@@ -128,7 +128,7 @@ export function RoiBlock({
           <span
             className={cn(
               'border-b transition-colors',
-              dark ? 'border-aura/40 text-aura hover:border-aura' : 'border-ink/30 text-ink hover:border-ink'
+              dark ? 'border-aura/40 text-aura hover:border-aura' : 'border-aura-deep text-ink hover:border-ink'
             )}
           >
             {roiCopy.calcLink}

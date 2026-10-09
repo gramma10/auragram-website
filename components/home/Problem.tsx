@@ -24,7 +24,7 @@ export function Problem() {
               <Reveal as="li" key={b.tag} delay={i * 0.07}>
                 <div className="flex items-start gap-4 border-t border-ink/10 py-5 sm:gap-5">
                   <span
-                    className="mt-[2px] inline-flex h-7 w-[68px] shrink-0 items-center justify-center rounded-full bg-volt font-mono text-[12px] font-medium tracking-[0.04em] text-ink tnum"
+                    className="mt-[2px] inline-flex h-7 w-[68px] shrink-0 items-center justify-center rounded-full border border-aura-line bg-aura-tint font-mono text-[12px] font-medium tracking-[0.04em] text-ink tnum"
                     aria-hidden
                   >
                     {b.tag}
@@ -36,7 +36,7 @@ export function Problem() {
           </ul>
 
           <Reveal delay={0.1}>
-            <div className="mt-8 border-l-2 border-volt pl-5">
+            <div className="mt-8 border-l-2 border-aura-deep pl-5">
               <p className="font-display text-[19px] font-extrabold leading-snug tracking-tight text-ink sm:text-[22px]">
                 {problem.close[0]}
               </p>

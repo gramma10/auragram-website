@@ -19,7 +19,7 @@ export type IndustryStat = {
   label: string;
   /** Εκτίμηση → pill «ΕΚΤΙΜΗΣΗ». Αλλιώς spec (από σχεδιασμό). */
   estimate?: boolean;
-  /** Το ευρώ ROI παίρνει το lime marker highlight πίσω από το νούμερο. */
+  /** Το ευρώ ROI παίρνει το cyan (aura-line) marker highlight πίσω από το νούμερο. */
   marker?: boolean;
 };
 

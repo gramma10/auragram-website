@@ -14,12 +14,10 @@ import { useLazyReady } from '@/components/ui/LazyMount';
 
 const eur = formatEUR;
 
-// Accent rule v3: fill lime #C7F94B, κενό track ink/15, thumb lime με 2px ink δακτύλιο (το thumb κουβαλά το 3:1 της κατάστασης).
-// Το γεμάτο κομμάτι έχει και 1px ink outline (ALPHA στο OUTLINE) ώστε γεμάτο↔κενό και γεμάτο↔φόντο να περνούν 3:1 —
-// οι τιμές των ζευγών μετρήθηκαν και αναφέρονται στο report του Round 4 (scripts/contrast-report).
-const FILL = '#C7F94B';
+// Palette v4: fill aura-deep #0E7490, κενό track ink/15, thumb cyan με 2px ink δακτύλιο (το thumb κουβαλά το 3:1 της κατάστασης).
+// Οι τιμές των ζευγών μετρήθηκαν — βλ. scripts/contrast-report.mjs (docs/round4-contrast.md).
+const FILL = '#0E7490';
 const TRACK_GREY = 'rgba(15,23,32,0.15)';
-const OUTLINE = 'rgba(15,23,32,0.60)';
 const THUMB = 24; // px — το ίδιο με το .slider στο globals.css
 
 function Slider({
@@ -62,11 +60,11 @@ function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        // 6px track στο κέντρο των 44px hit area: (1) lime fill 1px μέσα από το (2) ink outline του γεμάτου κομματιού, (3) κενό track
+        // 6px track στο κέντρο των 44px hit area: (1) fill aura-deep μέχρι το thumb, (2) κενό track ink/15 σε όλο το πλάτος
         style={{
-          backgroundImage: `linear-gradient(${FILL}, ${FILL}), linear-gradient(${OUTLINE}, ${OUTLINE}), linear-gradient(${TRACK_GREY}, ${TRACK_GREY})`,
-          backgroundSize: `max(0px, calc(${stop} - 1px)) 4px, ${stop} 6px, 100% 6px`,
-          backgroundPosition: '1px 50%, 0 50%, 0 50%',
+          backgroundImage: `linear-gradient(${FILL}, ${FILL}), linear-gradient(${TRACK_GREY}, ${TRACK_GREY})`,
+          backgroundSize: `${stop} 6px, 100% 6px`,
+          backgroundPosition: '0 50%, 0 50%',
           backgroundRepeat: 'no-repeat',
         }}
       />
@@ -184,7 +182,7 @@ export default function CalculatorBody() {
               max={1000000}
               value={avgValue}
               onChange={(e) => setAvgValue(Math.max(0, Number(e.target.value) || 0))}
-              className="no-spin h-12 w-full rounded-xl border border-ink/15 bg-white pl-9 pr-4 font-display text-[18px] font-extrabold tracking-tight text-ink tnum outline-none transition-colors focus:border-ink focus-visible:ring-2 focus-visible:ring-aura-dark focus-visible:ring-offset-2 focus-visible:ring-offset-bone"
+              className="no-spin h-12 w-full rounded-xl border border-ink/15 bg-white pl-9 pr-4 font-display text-[18px] font-extrabold tracking-tight text-ink tnum outline-none transition-colors focus:border-ink focus-visible:ring-2 focus-visible:ring-aura-deep focus-visible:ring-offset-2 focus-visible:ring-offset-bone"
             />
           </div>
         </div>

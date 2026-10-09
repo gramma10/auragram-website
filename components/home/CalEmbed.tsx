@@ -93,7 +93,7 @@ export function CalEmbed({
         </p>
         <a
           href={`mailto:${contactEmail()}`}
-          className="mt-4 inline-block border-b-2 border-ink pb-0.5 font-display text-[15px] font-extrabold text-ink"
+          className="mt-4 inline-block border-b-2 border-aura-deep pb-0.5 font-display text-[15px] font-extrabold text-ink"
         >
           {contactEmail()}
         </a>

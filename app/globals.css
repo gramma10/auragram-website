@@ -10,8 +10,9 @@
     --ink: #0f1720;
     --ink-soft: #5a6270;
     --aura: #22d3ee;
-    --volt: #c7f94b;
-    --aura-dark: #0891b2;
+    --aura-deep: #0e7490; /* cyan για γραφικά/links/labels πάνω σε light */
+    --aura-tint: #ecfeff;
+    --aura-line: #a5f3fc;
     --bone-2: #f3f3ee;
     --line: #e6e7e2;
     --fg: #b4bdcb; /* body σε dark — 10:1 */
@@ -43,7 +44,7 @@
   }
 
   .on-light :focus-visible {
-    outline-color: var(--ink);
+    outline-color: var(--aura-deep);
   }
 
   /* Τα νούμερα είναι επιχειρήματα πώλησης: πάντα tabular. */
@@ -200,21 +201,14 @@
     outline: 2px solid var(--aura);
     outline-offset: 3px;
   }
-  /* Accent rule v3 — το accent ακολουθεί την επιφάνεια: σε LIGHT επιφάνεια (light sections, λευκές κάρτες ακόμα και μέσα σε dark
-     section) το κουμπί είναι lime #C7F94B με ink #0F1720 κείμενο (≈ 15:1) και 1px ink/10 περίγραμμα ώστε η άκρη να διαβάζεται
-     πάνω στο #FAFAF7. Hover = ελαφρύ σκούρο lime (#B8EA3A), χωρίς glow. Focus ring = ink 2px offset 3px (το lime δεν περνά). */
+  /* Palette v4: ΕΝΑ χρώμα CTA παντού — cyan fill, ink label. Σε LIGHT επιφάνεια (light sections, λευκές κάρτες ακόμα και μέσα
+     σε dark section) προστίθεται 1px rgba(14,116,144,.35) περίγραμμα ώστε η άκρη να διαβάζεται πάνω στο #FAFAF7· το hover glow
+     είναι το ίδιο. Focus ring: cyan σε dark, aura-deep 2px offset 3px σε light. */
   .on-light .btn-cta {
-    background: var(--volt);
-    color: var(--ink);
-    border: 1px solid rgba(15, 23, 32, 0.1);
-  }
-  .on-light .btn-cta:hover,
-  .on-light .btn-cta:focus-visible {
-    background: #b8ea3a;
-    box-shadow: none;
+    border: 1px solid rgba(14, 116, 144, 0.35);
   }
   .on-light .btn-cta:focus-visible {
-    outline-color: var(--ink);
+    outline-color: var(--aura-deep);
   }
   .btn-cta:active {
     transform: scale(0.985);
@@ -229,12 +223,15 @@
   }
 
   /* ── Marker highlight ({ m: '…' } στο copy — ΜΟΝΟ σε light sections) ───────────────────────────────────────────
-     Lime πίσω από ink κείμενο (ο λόγος 15:1 είναι του ink πάνω στο lime — το lime ΔΕΝ είναι ποτέ χρώμα κειμένου).
-     Draw-in 0 → 100% πλάτος μία φορά όταν το γονικό .reveal μπει στο viewport (.is-in)· σε reduced motion στατικό. */
+     aura-line (#A5F3FC) ως «highlighter stroke» πίσω από ink κείμενο. Draw-in 0 → 100% πλάτος μία φορά όταν το γονικό .reveal μπει στο viewport
+     (.is-in)· σε reduced motion στατικό. */
   .marker {
     color: var(--ink);
-    padding: 0 0.12em;
-    background-image: linear-gradient(transparent 12%, #c7f94b 12%, #c7f94b 88%, transparent 88%);
+    /* overhang -0.04em: το padding μεγαλώνει ΜΟΝΟ το φόντο, το αρνητικό margin το ακυρώνει στη διάταξη → η στίξη που ακολουθεί
+       («τον χρόνο.») κολλάει στο κείμενο, χωρίς κενό. Highlighter stroke: καλύπτει περίπου το κάτω 55% των γραμμάτων. */
+    padding: 0 0.04em;
+    margin: 0 -0.04em;
+    background-image: linear-gradient(transparent 48%, #a5f3fc 48%, #a5f3fc 92%, transparent 92%);
     background-repeat: no-repeat;
     background-size: 100% 100%;
     -webkit-box-decoration-break: clone;
@@ -319,29 +316,29 @@
     transform: scale(0.94);
   }
 
-  /* Light (Round 4): thumb lime #C7F94B με 2px ink δακτύλιο (το thumb κουβαλά το 3:1 της κατάστασης)· fill lime, unfilled ink/15,
-     και 1px ink outline στο γεμάτο κομμάτι — όλα ζωγραφίζονται inline στο Calculator. Focus ring: ink 2px offset 3px. */
+  /* Light (Palette v4): thumb cyan (--aura) με 2px ink δακτύλιο· fill aura-deep, unfilled ink/15 (ζωγραφίζονται inline στο
+     Calculator). Focus ring: aura-deep 2px offset 3px. */
   .slider-light::-webkit-slider-thumb {
     box-sizing: border-box;
-    background: var(--volt);
+    background: var(--aura);
     border: 2px solid var(--ink);
     box-shadow: none;
   }
   .slider-light::-moz-range-thumb {
     box-sizing: border-box;
-    background: var(--volt);
+    background: var(--aura);
     border: 2px solid var(--ink);
     box-shadow: none;
   }
   .slider-light:focus-visible {
-    outline: 2px solid var(--ink);
+    outline: 2px solid var(--aura-deep);
     outline-offset: 3px;
   }
   .slider-light:focus-visible::-webkit-slider-thumb {
-    box-shadow: 0 0 0 3px var(--bone), 0 0 0 5px var(--ink);
+    box-shadow: 0 0 0 3px var(--bone), 0 0 0 5px var(--aura-deep);
   }
   .slider-light:focus-visible::-moz-range-thumb {
-    box-shadow: 0 0 0 3px var(--bone), 0 0 0 5px var(--ink);
+    box-shadow: 0 0 0 3px var(--bone), 0 0 0 5px var(--aura-deep);
   }
 
   /* Numeric input χωρίς native spinners (webkit + firefox) — κρατά inputmode="numeric". */
@@ -557,7 +554,7 @@ html[data-minibar] .sticky-cta {
   }
 }
 
-/* ── Aura (hero + agents): 3 radial-gradient blobs, ΜΟΝΟ transform. Cyan/teal, opacity 0.10–0.18, κανένα mov. ────────
+/* ── Aura (hero + agents): 3 radial-gradient blobs, ΜΟΝΟ transform. Cyan / deep cyan / violet halo (logo), opacity 0.10–0.18 (violet ≤ 0.14). ────────
    ΟΛΗ η τοποθέτηση γίνεται μέσα στο transform (--x/--y σε σταθερές μονάδες, ποτέ % του ύψους του section): έτσι ένα font swap που
    αλλάζει το ύψος του hero κατά λίγα px δεν μετακινεί ποτέ τα blobs (τα layout shifts μετράνε θέση, όχι transform). */
 .aura-blob {
@@ -587,7 +584,8 @@ html[data-minibar] .sticky-cta {
   --w: min(800px, 140vw);
   --x: 18vw;
   --y: 950px;
-  background: radial-gradient(closest-side, rgba(20, 184, 166, 0.12), rgba(20, 184, 166, 0) 100%);
+  /* halo #8B7CF6 (violet από το logo) — opacity ≤ 0.14, μόνο εδώ, ως απαλή λάμψη */
+  background: radial-gradient(closest-side, rgba(139, 124, 246, 0.13), rgba(139, 124, 246, 0) 100%);
   animation: aura-c 32s ease-in-out infinite alternate;
 }
 /* Agents (πολύ ψηλό section): τα blobs απλώνονται σε όλο το ύψος */

@@ -148,7 +148,7 @@ export default function ConfirmationPage() {
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 pt-7">
             <Link
               href="/about"
-              className="border-b-2 border-ink pb-1 font-display text-[15px] font-extrabold tracking-tight text-ink transition-colors hover:border-ink"
+              className="border-b-2 border-aura-deep pb-1 font-display text-[15px] font-extrabold tracking-tight text-ink transition-colors hover:border-ink"
             >
               Ποιοι είμαστε →
             </Link>

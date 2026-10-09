@@ -100,9 +100,9 @@ function Compare({ industry }: { industry: Industry }) {
         </span>
       </div>
 
-      {/* ΜΕ ΤΗΝ AURAGRAM: #F7FEE7 / #C7F94B, label #3F6212 */}
-      <div className="flex min-w-0 flex-col rounded-2xl border border-[#C7F94B] bg-[#F7FEE7] p-3 sm:p-4">
-        <p className="font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-[#3F6212]">
+      {/* ΜΕ ΤΗΝ AURAGRAM: aura-tint #ECFEFF / aura-line #A5F3FC, label aura-deep #0E7490 */}
+      <div className="flex min-w-0 flex-col rounded-2xl border border-aura-line bg-aura-tint p-3 sm:p-4">
+        <p className="font-mono text-[12px] font-semibold uppercase tracking-[0.12em] text-aura-deep">
           <span aria-hidden>✓</span> {industriesSection.after}
         </p>
         {list(industry.after)}
@@ -214,7 +214,7 @@ export default function IndustriesBody() {
           {String(active + 1).padStart(2, '0')} / {String(COUNT).padStart(2, '0')}
         </p>
 
-        {/* Pills: ανενεργά = λευκό + ink/10 + ink κείμενο· ενεργό = lime + ink κείμενο */}
+        {/* Pills: ανενεργά = λευκό + ink/10 + ink κείμενο· ενεργό = ink (#0A1020) φόντο + λευκό κείμενο */}
         <div
           ref={list}
           role="tablist"
@@ -238,8 +238,8 @@ export default function IndustriesBody() {
                 tabIndex={on ? 0 : -1}
                 onClick={() => select(i, 'tap')}
                 className={cn(
-                  'inline-flex min-h-[44px] shrink-0 snap-center items-center gap-2 whitespace-nowrap rounded-full border border-ink/10 px-4 font-display text-[14px] font-bold tracking-tight text-ink transition-colors duration-200',
-                  on ? 'bg-volt' : 'bg-white hover:border-ink/25'
+                  'inline-flex min-h-[44px] shrink-0 snap-center items-center gap-2 whitespace-nowrap rounded-full border border-ink/10 px-4 font-display text-[14px] font-bold tracking-tight transition-colors duration-200',
+                  on ? 'border-night-900 bg-night-900 text-white' : 'bg-white text-ink hover:border-ink/25'
                 )}
               >
                 <IndustryIcon name={ind.icon} />
@@ -266,7 +266,7 @@ export default function IndustriesBody() {
       {/* Λευκό panel */}
       <div className="mt-3 rounded-[20px] border border-ink/[0.08] bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,32,0.04),0_8px_24px_rgba(15,23,32,0.06)] sm:mt-5 sm:p-8">
         <p className="eyebrow flex items-center gap-2.5 text-ink-soft">
-          <span aria-hidden className="h-1.5 w-6 rounded-full border border-ink/10 bg-volt" />
+          <span aria-hidden className="h-0.5 w-6 bg-aura-deep" />
           {industriesSection.panelEyebrow}
         </p>
 
@@ -317,7 +317,7 @@ export default function IndustriesBody() {
                   <p className="pt-2.5 text-[12px] leading-snug text-ink-soft tnum">{ind.formula}</p>
                 ) : (
                   <a href="#ypologismos" className="mt-auto inline-flex min-h-[44px] items-center self-start pt-2 text-[14px] font-medium">
-                    <span className="border-b border-ink/40 text-ink transition-colors hover:border-ink">{roiCopy.calcLinkIndustry}</span>
+                    <span className="border-b-2 border-aura-deep text-ink transition-colors hover:border-ink">{roiCopy.calcLinkIndustry}</span>
                   </a>
                 )}
               </div>
@@ -325,7 +325,7 @@ export default function IndustriesBody() {
           })}
         </div>
 
-        {/* Κάτω γραμμή + lime CTA (μία φορά, κοινή για όλους τους κλάδους) */}
+        {/* Κάτω γραμμή + cyan CTA (μία φορά, κοινή για όλους τους κλάδους) */}
         <div className="mt-3 border-t border-ink/10 pt-3.5 sm:mt-6 sm:pt-6">
           <p className="max-w-xl font-display text-[15px] font-extrabold leading-snug tracking-tight text-ink sm:text-[18px]">
             {industriesSection.bottom}

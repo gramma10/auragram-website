@@ -79,7 +79,7 @@ export function Booking() {
               {CAL_LINK ? bookingNoscript.emailLabel : bookingNoscript.emailOnly}{' '}
               <a
                 href={`mailto:${contactEmail()}`}
-                className="border-b-2 border-ink font-display font-extrabold text-ink [overflow-wrap:anywhere]"
+                className="border-b-2 border-aura-deep font-display font-extrabold text-ink [overflow-wrap:anywhere]"
               >
                 {contactEmail()}
               </a>

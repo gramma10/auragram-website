@@ -48,7 +48,7 @@ export function Founders() {
 
           <Link
             href="/about"
-            className="mt-8 inline-flex min-h-[44px] items-center gap-2 border-b-2 border-ink font-display text-[16px] font-extrabold tracking-tight text-ink transition-colors hover:border-ink-soft"
+            className="mt-8 inline-flex min-h-[44px] items-center gap-2 border-b-2 border-aura-deep font-display text-[16px] font-extrabold tracking-tight text-ink transition-colors hover:border-ink"
           >
             {founders.link}
             <span aria-hidden>→</span>

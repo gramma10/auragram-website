@@ -3,7 +3,7 @@ import type { Rich } from '@/lib/content';
 /**
  * Rich = string | { s } | { m } — markup στην πηγή του copy (όχι regex):
  *  • { s } → cyan <strong> (dark surface)
- *  • { m } → marker highlight: lime πίσω από ink κείμενο (ΜΟΝΟ σε light sections — βλ. .marker στο globals.css)
+ *  • { m } → marker highlight: aura-line (#A5F3FC) πίσω από ink κείμενο (ΜΟΝΟ σε light sections — βλ. .marker στο globals.css)
  */
 export function RichText({ parts }: { parts: Rich }) {
   return (

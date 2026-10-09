@@ -26,7 +26,7 @@ export default function HomePage() {
     <>
       {/* Εναλλαγή dark/light ανά section (Round 4): D L D L D L D L D L D — ποτέ δύο γειτονικά με τον ίδιο τόνο.
           Hero (+tools) D · Problem L · Agents D · Calculator L · Services D · Industries L · Process D · Founders L ·
-          Pilot D · FAQ L · Booking D. Το accent ακολουθεί την επιφάνεια (cyan σε dark, lime σε light). */}
+          Pilot D · FAQ L · Booking D. Palette v4: ΕΝΑ χρώμα CTA (cyan) παντού· aura-deep για γραφικά πάνω σε light. */}
       <Hero />
       <Problem />
       <Agents />

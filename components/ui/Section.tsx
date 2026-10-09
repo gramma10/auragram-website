@@ -4,8 +4,8 @@ import { ConstellationGrid } from './constellation-grid';
 
 /**
  * Εναλλαγή dark/light ανά section — δίνει ρυθμό στη σελίδα.
- * ΚΑΝΟΝΑΣ (Round 4, «το accent ακολουθεί την επιφάνεια»): cyan πάνω σε dark επιφάνειες, lime (#C7F94B) πάνω σε light.
- * Το lime ΠΟΤΕ δεν είναι χρώμα κειμένου ούτε λεπτή γραμμή μόνο του πάνω σε light.
+ * ΚΑΝΟΝΑΣ (Palette v4): ΕΝΑ χρώμα μάρκας. Cyan (#22D3EE) πάνω σε dark· πάνω σε light το cyan των γραφικών/links/labels είναι το
+ * aura-deep (#0E7490), με aura-tint / aura-line για απαλά κουτιά και marker. Τα κουμπιά είναι cyan και στις δύο επιφάνειες.
  */
 export function Section({
   id,
@@ -65,8 +65,8 @@ export function Eyebrow({
       )}
     >
       <span
-        // light: lime «κάψουλα» 6px με ink/10 περίγραμμα (σχήμα, όχι λεπτή γραμμή — το lime μόνο του δεν διαβάζεται πάνω στο #FAFAF7)
-        className={cn('w-6', tone === 'dark' ? 'h-px bg-aura/60' : 'h-1.5 rounded-full border border-ink/10 bg-volt')}
+        // light: aura-deep (2px) — dark: cyan/60 (1px)
+        className={cn('w-6', tone === 'dark' ? 'h-px bg-aura/60' : 'h-0.5 bg-aura-deep')}
         aria-hidden
       />
       {children}

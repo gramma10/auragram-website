@@ -28,10 +28,13 @@ const config: Config = {
         // Κείμενο πάνω σε dark. Όλα ≥ 4.5:1 σε #0A1020 / #0E1628.
         fg: '#B4BDCB', // body — 10:1
         'fg-dim': '#8C96A8', // labels, microcopy — 6:1
-        // Accent: cyan = ΟΛΑ τα κουμπιά & έμφαση σε dark. Lime = μόνο μη-διαδραστικά highlights σε light.
+        // Accent: cyan (aura) = ΟΛΑ τα κουμπιά & η έμφαση σε dark.
         aura: '#22D3EE',
-        'aura-dark': '#0891B2', // cyan για accents πάνω σε ΑΝΟΙΧΤΑ sections (≥ 3:1 σε #FAFAF7)
-        volt: '#C7F94B',
+        // Palette v4 — ΕΝΑ χρώμα μάρκας, παρμένο από το logo (ασημί μέταλλο με cyan → violet λάμψη).
+        'aura-deep': '#0E7490', // cyan για γραφικά, links, labels, ✓ πάνω σε ΑΝΟΙΧΤΕΣ επιφάνειες (≥ 4.5:1 σε #FAFAF7 και λευκό)
+        'aura-tint': '#ECFEFF', // απαλό cyan φόντο κουτιού σε light
+        'aura-line': '#A5F3FC', // απαλό cyan περίγραμμα + marker highlight σε light
+        halo: '#8B7CF6', // violet από τη λάμψη του logo — ΜΟΝΟ μέσα στο κινούμενο aura background (hero + agents). Ποτέ σε κουμπί/κείμενο/περίγραμμα/φόντο section.
       },
       fontFamily: {
         display: ['var(--font-display)', 'system-ui', 'sans-serif'],

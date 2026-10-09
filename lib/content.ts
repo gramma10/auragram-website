@@ -16,7 +16,7 @@ import {
 const calcDefault = calcRoi(CALC_DEFAULTS);
 
 /**
- * Κείμενο με markup στην πηγή: string = απλό, {s} = έμφαση (cyan <strong>), {m} = marker highlight (lime πίσω από ink κείμενο —
+ * Κείμενο με markup στην πηγή: string = απλό, {s} = έμφαση (cyan <strong>), {m} = marker highlight (aura-line πίσω από ink κείμενο —
  * ΜΟΝΟ σε light sections). Όχι regex.
  */
 export type Rich = (string | { s: string } | { m: string })[];
