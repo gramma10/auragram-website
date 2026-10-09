@@ -33,6 +33,8 @@ const hiddenCls = 'pointer-events-none max-h-0 translate-y-2 pb-0 opacity-0';
 
 export function ChatPlayer({
   scenario,
+  playing = true,
+  loop = true,
   startDelay = 1300,
   gap = 1250,
   endPause = 4200,
@@ -40,6 +42,10 @@ export function ChatPlayer({
   onFinishedChange,
 }: {
   scenario: Scenario;
+  /** false = η συνομιλία περιμένει (μόνο το πρώτο μήνυμα φαίνεται)· true = ξεκινά. */
+  playing?: boolean;
+  /** true = ξαναρχίζει μετά από παύση στο τέλος (desktop)· false = μένει στην τελική κατάσταση (mobile scroll-driven hero). */
+  loop?: boolean;
   startDelay?: number;
   gap?: number;
   endPause?: number;
@@ -74,13 +80,15 @@ export function ChatPlayer({
       setCursor(steps.length); // τελική κατάσταση, στατικά
       return;
     }
+    if (!playing) return;
     if (cursor < steps.length) {
       const t = setTimeout(() => setCursor((c) => c + 1), cursor === 0 ? startDelay : steps[cursor].wait);
       return () => clearTimeout(t);
     }
+    if (!loop) return;
     const t = setTimeout(() => setCursor(0), endPause); // παύση στο τέλος, μετά restart από το 1ο μήνυμα
     return () => clearTimeout(t);
-  }, [reduced, cursor, steps, startDelay, endPause]);
+  }, [reduced, playing, loop, cursor, steps, startDelay, endPause]);
 
   useEffect(() => {
     cb.current.onFinishedChange?.(finished && steps.length > 0);

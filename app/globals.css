@@ -451,6 +451,95 @@ html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 450px; }
   html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 235px; }
 }
 
+.hero-shadow {
+  display: none;
+}
+
+/* ── Mobile hero: «phone settle» (< 640px) ───────────────────────────────────────────────────────────────────────────
+   ΕΝΑ κινητό (το ChatPlayer του hero) μέσα σε ένα ψηλότερο wrapper (.hero-stage): position: sticky + transforms, καμία παρέμβαση στο scroll.
+   STATE 0 = rotate(-9deg) scale(.82) γύρω από το πάνω-κέντρο (το πάνω άκρο μένει εκεί που το έβαλε η διάταξη, ώστε να φαίνεται από
+   την πρώτη οθόνη)· το HeroChat γράφει rotate/scale ανά scroll (ένας passive rAF handler) και το --ptop (κέντρο ανάμεσα σε top bar και dock).
+   Το pin = ένας spacer 50svh μετά το κινητό. Reduced motion ή οθόνη < 640px ύψος: όχι tilt/pin. */
+@media (max-width: 639px) {
+  /* Το sticky κινείται μόνο μέσα στο CONTENT box του γονέα — όχι στο padding. Γι' αυτό το pin είναι ένας κενός spacer μετά το κινητό. */
+  html[data-js] .hero-pin {
+    height: 50svh;
+  }
+  html[data-js] .hero-phone {
+    position: sticky;
+    top: var(--ptop, 84px);
+    transform-origin: 50% 0;
+    transform: rotate(-9deg) scale(0.82);
+  }
+  .hero-float.is-idle {
+    animation: hero-float 5s ease-in-out infinite;
+  }
+  /* Pinned: πολύ ήπιο float ±2.5px / 6s (ξεκινά από 0 — κανένα άλμα στην είσοδο) */
+  .hero-float.is-pin {
+    animation: hero-float-pin 6s ease-in-out infinite;
+  }
+  /* Σκιά/λάμψη κάτω από το κινητό («levitation»): ελλειπτικό radial-gradient (το θόλωμα είναι στο gradient, όχι filter)·
+     το HeroChat γράφει μόνο transform (scaleX) και opacity ανά scroll. */
+  html[data-js] .hero-shadow {
+    display: block;
+  }
+  html[data-js] .hero-phone[data-armed] .hero-caption {
+    opacity: 0;
+    transition: opacity 500ms ease-out;
+  }
+  html[data-js] .hero-phone[data-armed][data-settled] .hero-caption {
+    opacity: 1;
+  }
+}
+@media (max-width: 639px) and (max-height: 639px) {
+  /* πολύ χαμηλή οθόνη: μόνο το settle, χωρίς pin */
+  html[data-js] .hero-pin {
+    height: 0;
+  }
+  html[data-js] .hero-phone {
+    position: relative;
+  }
+}
+@keyframes hero-float-pin {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-2.5px);
+  }
+  75% {
+    transform: translateY(2.5px);
+  }
+}
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(-5px);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-js] .hero-pin {
+    height: 0 !important;
+  }
+  html[data-js] .hero-phone {
+    position: relative !important;
+    transform: none !important;
+  }
+  .hero-float {
+    animation: none !important;
+  }
+  .hero-shadow {
+    display: none !important;
+  }
+  html[data-js] .hero-phone[data-armed] .hero-caption {
+    opacity: 1 !important;
+  }
+}
+
 /* Οριζόντια pill rows (Services / Industries): fade μόνο στην πλευρά με κι άλλο περιεχόμενο (vars από useEdgeFade).
    Από lg+ (Services) / md+ (Industries) οι σειρές δεν scrollάρουν πια → χωρίς mask. */
 .fade-x {

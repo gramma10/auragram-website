@@ -7,11 +7,13 @@ import { ProofBar } from './ProofBar';
 
 export function Hero() {
   return (
-    <section className="surface-dark grid-bg relative isolate overflow-hidden px-4 pb-14 pt-28 sm:px-6 sm:pb-16 sm:pt-36 lg:pb-20 lg:pt-40">
+    <section className="surface-dark grid-bg relative isolate overflow-x-clip px-4 pb-14 pt-28 max-sm:pt-[88px] sm:px-6 sm:pb-16 sm:pt-36 lg:pb-20 lg:pt-40">
       <Aura />
       {/* Mobile: headline → subhead → CTA → risk row → phone. Desktop: 2 στήλες, phone κεντραρισμένο. */}
-      <div className="relative mx-auto grid w-full max-w-page gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
-        <div>
+      {/* Mobile (< 640px): κενά 12px ανάμεσα στα blocks ώστε το κινητό (hero-stage) να φαίνεται από την πρώτη οθόνη. */}
+      <div className="relative mx-auto grid w-full max-w-page gap-12 max-sm:gap-3 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
+        {/* data-hero-text: στο mobile (< 640px) το HeroChat το σβήνει/ανεβάζει σε συνάρτηση με το settle του κινητού. */}
+        <div data-hero-text>
           {/* Το eyebrow είναι μακρύ («AI συστήματα με μετρήσιμο ROI · Ελλάδα»): σε mobile στενό tracking ώστε να μένει σε ΜΙΑ γραμμή και με
             το fallback και με το JetBrains Mono — αλλιώς το font swap το κατεβάζει από 2 σε 1 γραμμή και σπρώχνει όλο το hero (CLS). */}
           <p className="eyebrow flex items-center gap-2.5 whitespace-nowrap tracking-[0.04em] text-aura sm:tracking-[0.12em]">
@@ -19,21 +21,22 @@ export function Hero() {
             {hero.eyebrow}
           </p>
 
-          <h1 className="h1 h1-hero pt-5 text-white sm:pt-6">
+          <h1 className="h1 h1-hero pt-5 text-white max-sm:pt-3 sm:pt-6">
             {hero.h1[0]}
             <br />
             {/* Η ουσία της υπόσχεσης — cyan, όχι γκρι */}
             <span className="text-aura">{hero.h1[1]}</span>
           </h1>
 
-          <p className="t-body pt-5 text-fg sm:pt-6">{hero.sub}</p>
+          <p className="t-body pt-5 text-fg max-sm:pt-3 sm:pt-6">{hero.sub}</p>
 
-          <div className="flex flex-col items-start gap-3.5 pt-7 sm:pt-9">
+          <div className="flex flex-col items-start gap-3.5 pt-7 max-sm:gap-3 max-sm:pt-4 sm:pt-9">
             <Cta tone="dark" where="hero" />
             {/* Risk-reversal: 3 check items. Κάθε item έχει δικό του ✓ — δεν υπάρχουν διαχωριστικά «·» που θα
                 μπορούσαν να μείνουν ορφανά όταν τυλίγει. Σε κινητό (< 640px) στοιβάζονται σε 3 γραμμές: δύο
                 items μαζί χρειάζονται ≥ 372px, ενώ το διαθέσιμο πλάτος στα 390px είναι 358px. */}
-            <ul className="flex flex-col items-start gap-y-2 text-[14px] leading-snug text-fg-dim sm:flex-row sm:flex-wrap sm:gap-x-5 sm:gap-y-2">
+            <p className="text-[13px] leading-snug text-fg-dim sm:hidden">{hero.checksShort}</p>
+            <ul className="hidden flex-col items-start gap-y-2 text-[14px] leading-snug text-fg-dim sm:flex sm:flex-row sm:flex-wrap sm:gap-x-5 sm:gap-y-2">
               {hero.risk.map((t) => (
                 <li key={t} className="inline-flex items-center gap-1.5">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden className="shrink-0">
@@ -47,7 +50,7 @@ export function Hero() {
 
           <a
             href="#agents"
-            className="mt-4 inline-flex min-h-[44px] items-center gap-2 border-b border-white/15 text-[14px] text-fg-dim transition-colors hover:border-aura hover:text-white sm:mt-6"
+            className="mt-4 hidden min-h-[44px] items-center gap-2 border-b border-white/15 text-[14px] text-fg-dim transition-colors hover:border-aura hover:text-white sm:mt-6 sm:inline-flex"
           >
             {hero.ghost}
             <span aria-hidden>↓</span>
