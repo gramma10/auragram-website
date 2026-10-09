@@ -1,0 +1,10 @@
+BEFORE  390px provlima  idle     frames=265 p50=16.7 p95=33.4 max=66.7ms  >33ms:11 >50ms:2
+BEFORE  390px provlima  scroll   frames=226 p50=16.7 p95=33.3 max=33.5ms  >33ms:6 >50ms:0
+BEFORE  390px kladoi    idle     frames=294 p50=16.7 p95=16.8 max=33.4ms  >33ms:4 >50ms:0
+BEFORE  390px kladoi    scroll   frames=212 p50=16.7 p95=33.4 max=50.0ms  >33ms:9 >50ms:0
+BEFORE 1440px provlima  idle     frames=252 p50=16.7 p95=33.4 max=116.7ms  >33ms:9 >50ms:2
+BEFORE 1440px provlima  scroll   frames=167 p50=16.7 p95=33.5 max=217.2ms  >33ms:12 >50ms:4
+BEFORE 1440px provlima  pointer  frames=172 p50=33.3 p95=50.0 max=83.3ms  >33ms:28 >50ms:6
+BEFORE 1440px kladoi    idle     frames=239 p50=16.7 p95=33.5 max=50.2ms  >33ms:23 >50ms:2
+BEFORE 1440px kladoi    scroll   frames=153 p50=32.9 p95=50.0 max=66.7ms  >33ms:13 >50ms:4
+BEFORE 1440px kladoi    pointer  frames=208 p50=16.8 p95=33.5 max=66.9ms  >33ms:25 >50ms:2

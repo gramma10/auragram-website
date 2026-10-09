@@ -1,0 +1,10 @@
+TEXTSAFE  390px provlima  idle     frames=221 p50=16.7 p95=49.9 max=83.4ms  >33ms:21 >50ms:6
+TEXTSAFE  390px provlima  scroll   frames=203 p50=16.7 p95=33.4 max=50.0ms  >33ms:8 >50ms:0
+TEXTSAFE  390px kladoi    idle     frames=272 p50=16.7 p95=33.3 max=66.8ms  >33ms:4 >50ms:1
+TEXTSAFE  390px kladoi    scroll   frames=157 p50=16.7 p95=50.1 max=100.1ms  >33ms:25 >50ms:10
+TEXTSAFE 1440px provlima  idle     frames=191 p50=16.8 p95=50.0 max=50.4ms  >33ms:31 >50ms:6
+TEXTSAFE 1440px provlima  scroll   frames=143 p50=33.2 p95=50.1 max=83.3ms  >33ms:24 >50ms:9
+TEXTSAFE 1440px provlima  pointer  frames=182 p50=33.2 p95=50.0 max=83.4ms  >33ms:25 >50ms:8
+TEXTSAFE 1440px kladoi    idle     frames=203 p50=16.7 p95=50.0 max=66.8ms  >33ms:24 >50ms:6
+TEXTSAFE 1440px kladoi    scroll   frames=156 p50=16.7 p95=50.3 max=133.3ms  >33ms:20 >50ms:9
+TEXTSAFE 1440px kladoi    pointer  frames=178 p50=33.2 p95=50.2 max=133.3ms  >33ms:28 >50ms:11

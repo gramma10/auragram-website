@@ -1,0 +1,4 @@
+390x724 HERO (settle→pin→release)            frames=104 p50=16.7 p95=33.3 max=49.9ms >33ms:3 >50ms:0  (median of 5 by p95; p95s 17/17/33/33/33)
+390x724 control (Founders, same distance)    frames=104 p50=16.7 p95=50.0 max=183.3ms >33ms:15 >50ms:5  (median of 5 by p95; p95s 50/50/50/83/83)
+390x844 HERO (settle→pin→release)            frames=121 p50=16.7 p95=16.8 max=32.7ms >33ms:0 >50ms:0  (median of 5 by p95; p95s 17/17/17/33/33)
+390x844 control (Founders, same distance)    frames=121 p50=16.7 p95=50.0 max=183.2ms >33ms:13 >50ms:4  (median of 5 by p95; p95s 33/50/50/50/67)
