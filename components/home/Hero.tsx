@@ -10,9 +10,10 @@ export function Hero() {
     <section className="surface-dark grid-bg relative isolate overflow-x-clip px-4 pb-14 pt-28 max-sm:pt-[88px] sm:px-6 sm:pb-16 sm:pt-36 lg:pb-20 lg:pt-40">
       <Aura />
       {/* Mobile: headline → subhead → CTA → risk row → phone. Desktop: 2 στήλες, phone κεντραρισμένο. */}
-      {/* Mobile (< 640px): κανονική ροή, κενά 12px ανάμεσα στα blocks ώστε το CTA να φαίνεται πάντα στην πρώτη οθόνη (390×664). */}
+      {/* Mobile (< 640px): κενά 12px ανάμεσα στα blocks ώστε το κινητό (hero-stage) να φαίνεται από την πρώτη οθόνη. */}
       <div className="relative mx-auto grid w-full max-w-page gap-12 max-sm:gap-3 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
-        <div>
+        {/* data-hero-text: στο mobile (< 640px) το HeroChat το σβήνει/ανεβάζει σε συνάρτηση με το settle του κινητού. */}
+        <div data-hero-text>
           {/* Το eyebrow είναι μακρύ («AI συστήματα με μετρήσιμο ROI · Ελλάδα»): σε mobile στενό tracking ώστε να μένει σε ΜΙΑ γραμμή και με
             το fallback και με το JetBrains Mono — αλλιώς το font swap το κατεβάζει από 2 σε 1 γραμμή και σπρώχνει όλο το hero (CLS). */}
           <p className="eyebrow flex items-center gap-2.5 whitespace-nowrap tracking-[0.04em] text-aura sm:tracking-[0.12em]">
@@ -20,7 +21,7 @@ export function Hero() {
             {hero.eyebrow}
           </p>
 
-          <h1 className="h1 h1-hero pt-5 text-white max-sm:pt-3 max-sm:text-[2.25rem] sm:pt-6">
+          <h1 className="h1 h1-hero pt-5 text-white max-sm:pt-3 sm:pt-6">
             {hero.h1[0]}
             <br />
             {/* Η ουσία της υπόσχεσης — cyan, όχι γκρι */}
