@@ -256,7 +256,7 @@ export default function CalculatorBody() {
           }}
           className="mt-4 inline-flex min-h-[44px] items-center gap-2 border-b border-ink/20 text-[14px] text-ink-soft transition-colors hover:border-ink hover:text-ink"
         >
-          Στείλτε μου αυτό το νούμερο με το ραντεβού
+          Στείλτε μου αυτό το νούμερο με το αίτημα
           <span aria-hidden>↓</span>
         </button>
       </div>

@@ -29,7 +29,7 @@ export function Footer() {
                 Το pilot
               </Link>
               <Link href="/#klisi" className="inline-flex min-h-[44px] items-center text-fg transition-colors hover:text-white">
-                Κλείστε κλήση
+                Ζητήστε κλήση
               </Link>
             </div>
             <div className="flex flex-col">

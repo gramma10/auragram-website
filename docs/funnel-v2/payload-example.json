@@ -1,0 +1,30 @@
+{
+  "secret": "«REDACTED»",
+  "id": "ad96564e-56c4-4390-b45a-efdcc9c91430",
+  "submittedAt": "2026-10-13T19:52:36+03:00",
+  "name": "Μαρία",
+  "phone": "+306912345678",
+  "email": "maria@example.gr",
+  "business": "Οδοντιατρείο, 5 άτομα",
+  "reasons": [
+    "Χάνω leads"
+  ],
+  "revenue": "150.000 – 500.000€",
+  "industryViewed": "iatreia",
+  "calculator": {
+    "leads": 70,
+    "responseRate": 30,
+    "avgValue": 400,
+    "hoursPerWeek": 12,
+    "lostRevenue": 1372,
+    "hoursPerMonth": 51.96,
+    "timeValue": 1299
+  },
+  "utm": {
+    "utm_source": "instagram",
+    "utm_medium": "reels",
+    "utm_campaign": "reel-test",
+    "landing": "/"
+  },
+  "page": "/"
+}

@@ -4,10 +4,9 @@
 
 | Μεταβλητή | Scope | Υποχρεωτική; | Τι κάνει |
 |---|---|---|---|
-| `LEGAL_TODO_OK` | **Preview ΜΟΝΟ** (`1`) | **Ναι, για το preview** | Παρακάμπτει το build-gate των νομικών στοιχείων (`lib/legal.ts`). Χωρίς αυτό το build αποτυγχάνει όσο τα 5 πεδία `LEGAL` είναι null. **ΠΟΤΕ στο Production scope.** |
-| `NEXT_PUBLIC_CAL_LINK` | Preview + Production | Προαιρετική | π.χ. `auragram/xartis-ai`. Χωρίς αυτό: η φόρμα δουλεύει, δείχνει fallback αντί για ημερολόγιο, και το `<noscript>` έχει μόνο το email. |
-| `LEAD_WEBHOOK_URL` | Preview + Production | Προαιρετική (απαραίτητη στο production) | Πού πάνε τα leads (n8n/Make). Στο preview **άφησέ την κενή** (το lead καταγράφεται στα logs) ή βάλε δοκιμαστικό webhook — όχι το production. |
-| `LEAD_WEBHOOK_SECRET` | Preview + Production | Προαιρετική | Στέλνεται ως header `x-auragram-secret`. |
+| `LEGAL_TODO_OK` | **Preview ΜΟΝΟ** (`1`) | **Ναι, για το preview** | Παρακάμπτει το build-gate των νομικών στοιχείων (`lib/legal.ts`). Χωρίς αυτό το build αποτυγχάνει όσο λείπει η πόλη (`LEGAL.city`). **ΠΟΤΕ στο Production scope.** |
+| `LEAD_WEBHOOK_URL` | Preview + Production | **Ναι** (Funnel v2) | Το `/exec` URL του Google Apps Script (βλ. `docs/apps-script/README.md`). Χωρίς αυτό η φόρμα δείχνει επιτυχία αλλά το lead καταγράφεται ΜΟΝΟ στα logs. |
+| `LEAD_WEBHOOK_SECRET` | Preview + Production | **Ναι** (Funnel v2) | Το ίδιο με το Script Property `LEAD_SECRET`. Στέλνεται μέσα στο JSON σώμα (όχι header). |
 | `NEXT_PUBLIC_SITE_URL` | Production | Προαιρετική | Default `https://auragram.gr`. Στο preview **άφησέ την κενή** (το preview δεν ευρετηριάζεται). |
 | `NEXT_PUBLIC_GA4_ID` / `NEXT_PUBLIC_META_PIXEL_ID` / `NEXT_PUBLIC_CLARITY_ID` | Production | Προαιρετικές | Analytics (φορτώνουν μόνο μετά τη συγκατάθεση cookies). **Άφησέ τα κενά στο Preview** ώστε να μη «λερώνουν» τα production δεδομένα. |
 | `NEXT_PUBLIC_NOINDEX` | οποιοδήποτε | Προαιρετική | `1` = μπλοκάρει το indexing χειροκίνητα (έξτρα ασφάλεια). |
@@ -39,7 +38,8 @@ vercel link                      # δημιουργεί/συνδέει project (
 
 # env vars — ΜΟΝΟ Preview scope για το LEGAL_TODO_OK
 vercel env add LEGAL_TODO_OK preview          # τιμή: 1
-vercel env add NEXT_PUBLIC_CAL_LINK preview   # προαιρετικό, π.χ. auragram/xartis-ai
+vercel env add LEAD_WEBHOOK_URL preview
+vercel env add LEAD_WEBHOOK_SECRET preview
 
 # PREVIEW deploy (ΧΩΡΙΣ --prod)
 vercel deploy
@@ -66,6 +66,6 @@ vercel deploy
 
 ## 5. Πριν το production (δεν είναι μέρος του preview)
 
-- Συμπλήρωση των 5 πεδίων `LEGAL` και του `CONTACT.email` στο `lib/config.ts`.
+- Συμπλήρωση της πόλης (`LEGAL.city`) στο `lib/config.ts` (τα ονόματα και το `CONTACT.email` είναι ήδη συμπληρωμένα).
 - Το `LEGAL_TODO_OK` **δεν** μπαίνει στο Production scope.
 - `NEXT_PUBLIC_SITE_URL`, `LEAD_WEBHOOK_URL` (+secret), analytics IDs στο Production scope.

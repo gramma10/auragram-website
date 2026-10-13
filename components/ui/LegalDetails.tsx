@@ -1,8 +1,5 @@
 import type { ReactNode } from 'react';
-import { LEGAL } from '@/lib/config';
-import { LEGAL_LABELS, type LegalKey } from '@/lib/legal';
-
-const prefix: Partial<Record<LegalKey, string>> = { afm: 'ΑΦΜ ', doy: 'ΔΟΥ ', seat: 'έδρα ' };
+import { LEGAL_LABELS, legalValue, type LegalKey } from '@/lib/legal';
 
 /** Ορατό ΜΟΝΟ σε development: σαφές μπλοκ «εδώ λείπει στοιχείο», ώστε να μη χαθεί ποτέ. */
 function TodoBlock({ field }: { field: LegalKey }) {
@@ -17,28 +14,23 @@ function TodoBlock({ field }: { field: LegalKey }) {
 }
 
 /**
- * Τα νομικά στοιχεία του LEGAL (lib/config.ts) σε ένα σημείο του κειμένου.
- *  • συμπληρωμένα → «πλήρης επωνυμία, ΑΦΜ …, ΔΟΥ …, έδρα …»
- *  • ελλιπή, development → TODO block ανά πεδίο
- *  • ελλιπή, production → το build έχει ήδη αποτύχει (lib/legal.ts)· με LEGAL_TODO_OK=1 παραλείπονται.
- * `bare`: μόνο οι τιμές, χωρίς πρόθεμα (π.χ. η πόλη των δικαστηρίων).
+ * Ένα νομικό στοιχείο (lib/config.ts → LEGAL / CONTACT) σε ένα σημείο του κειμένου.
+ *  • συμπληρωμένο → η τιμή
+ *  • ελλιπές, development → TODO block
+ *  • ελλιπές, production → το build έχει ήδη αποτύχει (lib/legal.ts)· με LEGAL_TODO_OK=1 (preview) δεν βγαίνει τίποτα.
  */
-export function LegalDetails({ fields, bare = false }: { fields: LegalKey[]; bare?: boolean }) {
-  const dev = process.env.NODE_ENV === 'development';
-  const parts: ReactNode[] = [];
-  fields.forEach((k) => {
-    const v = LEGAL[k] && String(LEGAL[k]).trim();
-    if (v) parts.push(<span key={k}>{bare ? v : `${prefix[k] ?? ''}${v}`}</span>);
-    else if (dev) parts.push(<TodoBlock key={k} field={k} />);
-  });
-  return (
-    <>
-      {parts.map((p, i) => (
-        <span key={i}>
-          {i > 0 && ', '}
-          {p}
-        </span>
-      ))}
-    </>
-  );
+export function LegalValue({
+  field,
+  before = '',
+  after = '',
+}: {
+  field: LegalKey;
+  /** κείμενο ΠΡΙΝ την τιμή — εμφανίζεται μόνο αν εμφανίζεται και η τιμή (π.χ. «Πόλη: ») */
+  before?: string;
+  /** κείμενο ΜΕΤΑ την τιμή (π.χ. «. ») */
+  after?: string;
+}): ReactNode {
+  const v = legalValue(field);
+  if (v) return <>{before}{v}{after}</>;
+  return process.env.NODE_ENV === 'development' ? <>{before}<TodoBlock field={field} />{after}</> : null;
 }
