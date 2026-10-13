@@ -10,3 +10,8 @@ npm-debug.log*
 .vercel
 next-env.d.ts
 tsconfig.tsbuildinfo
+
+# Google Apps Script deploy (clasp) — contains LEAD_SECRET, never commit
+.clasp.json
+.clasprc.json
+.gas-deploy/
