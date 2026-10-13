@@ -1,0 +1,18 @@
+390px / DPR 3 (iPhone)  /
+    {"who":"Χρήστος","box":"171×214","painted":"212×214","needDevicePx":"635×641","served":"w=750 q=90","servedNatural":"(lazy — τιμές από προηγούμενο run του ίδιου build)","filter":"none","transform":"none"}
+    {"who":"Παναγιώτης","box":"171×214","painted":"214×214","needDevicePx":"641×641","served":"w=750 q=90","servedNatural":"(lazy — τιμές από προηγούμενο run του ίδιου build)","filter":"none","transform":"none"}
+390px / DPR 3 (iPhone)  /about
+    {"who":"Χρήστος","box":"308×385","painted":"382×385","needDevicePx":"1145×1155","served":"w=1200 q=90","servedNatural":"332×335","filter":"none","transform":"none"}
+    {"who":"Παναγιώτης","box":"308×385","painted":"385×385","needDevicePx":"1155×1155","served":"w=1200 q=90","servedNatural":"(lazy — τιμές από προηγούμενο run του ίδιου build)","filter":"none","transform":"none"}
+1440px / DPR 1  /
+    {"who":"Χρήστος","box":"242×302","painted":"300×302","needDevicePx":"300×302","served":"w=384 q=90","servedNatural":"359×362","filter":"none","transform":"none"}
+    {"who":"Παναγιώτης","box":"242×302","painted":"302×302","needDevicePx":"302×302","served":"w=384 q=90","servedNatural":"359×359","filter":"none","transform":"none"}
+1440px / DPR 1  /about
+    {"who":"Χρήστος","box":"140×380","painted":"377×380","needDevicePx":"377×380","served":"w=640 q=90","servedNatural":"400×403","filter":"none","transform":"none"}
+    {"who":"Παναγιώτης","box":"140×380","painted":"380×380","needDevicePx":"380×380","served":"w=640 q=90","servedNatural":"400×400","filter":"none","transform":"none"}
+1440px / DPR 2 (retina)  /
+    {"who":"Χρήστος","box":"242×302","painted":"300×302","needDevicePx":"600×605","served":"w=750 q=90","servedNatural":"360×363","filter":"none","transform":"none"}
+    {"who":"Παναγιώτης","box":"242×302","painted":"302×302","needDevicePx":"605×605","served":"w=750 q=90","servedNatural":"360×360","filter":"none","transform":"none"}
+1440px / DPR 2 (retina)  /about
+    {"who":"Χρήστος","box":"140×380","painted":"377×380","needDevicePx":"754×760","served":"w=828 q=90","servedNatural":"400×403","filter":"none","transform":"none"}
+    {"who":"Παναγιώτης","box":"140×380","painted":"380×380","needDevicePx":"760×760","served":"w=828 q=90","servedNatural":"400×400","filter":"none","transform":"none"}
