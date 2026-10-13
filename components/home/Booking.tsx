@@ -1,5 +1,5 @@
 import { offer, bookingNoscript } from '@/lib/content';
-import { CAL_LINK, contactEmail } from '@/lib/config';
+import { contactEmail } from '@/lib/config';
 import { Section, Eyebrow, H2 } from '@/components/ui/Section';
 import { Reveal } from '@/components/ui/Reveal';
 import { BookingLazy } from './BookingLazy';
@@ -17,7 +17,7 @@ function bold(text: string) {
   );
 }
 
-/** Server shell: το offer (στατικό copy, SSR). Η φόρμα/Cal.com στα δεξιά είναι lazy — βλ. BookingLazy / BookingForm. */
+/** Server shell: το offer (στατικό copy, SSR). Η φόρμα στα δεξιά είναι lazy — βλ. BookingLazy / BookingForm. */
 export function Booking() {
   return (
     <Section tone="dark" id="klisi" className="pb-sticky lg:pb-32">
@@ -53,8 +53,6 @@ export function Booking() {
               <p className="flex items-center gap-2.5 font-display text-[15px] font-extrabold tracking-tight text-white">
                 <span className="h-1.5 w-1.5 rounded-full bg-aura animate-pulse-dot" aria-hidden />
                 {offer.scarcity}
-                {/* Για live «X θέσεις έμειναν»: τραβήξτε slots από το Cal.com API.
-                    ΠΟΤΕ fake countdown. */}
               </p>
               <p className="text-[13px] leading-relaxed text-fg-dim">{offer.riskReversal}</p>
             </div>
@@ -63,20 +61,12 @@ export function Booking() {
 
         <BookingLazy />
 
-        {/* Χωρίς JS δεν υπάρχει φόρμα ούτε Cal.com embed: απλό link στη σελίδα κράτησης + email. */}
+        {/* Χωρίς JS δεν υπάρχει φόρμα: μόνο το email. */}
         <noscript>
           <div className="on-light rounded-[20px] border border-ink/15 bg-white p-6 sm:p-8">
             <p className="text-[15px] leading-relaxed text-ink">{bookingNoscript.text}</p>
-            {CAL_LINK && (
-              <a
-                href={`https://cal.com/${CAL_LINK}`}
-                className="btn-cta mt-5 w-full sm:w-auto"
-              >
-                {bookingNoscript.calLabel}
-              </a>
-            )}
             <p className="pt-5 text-[15px] leading-relaxed text-ink-soft">
-              {CAL_LINK ? bookingNoscript.emailLabel : bookingNoscript.emailOnly}{' '}
+              {bookingNoscript.emailOnly}{' '}
               <a
                 href={`mailto:${contactEmail()}`}
                 className="border-b-2 border-aura-deep font-display font-extrabold text-ink [overflow-wrap:anywhere]"

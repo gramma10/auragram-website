@@ -11,6 +11,9 @@ import { Faq } from '@/components/home/Faq';
 import { Booking } from '@/components/home/Booking';
 import { faq } from '@/lib/content';
 
+// Η φόρμα (server action) περιμένει το Apps Script: έως 2 προσπάθειες × 10″ timeout. Χωρίς αυτό το Vercel κόβει στα 10″.
+export const maxDuration = 30;
+
 const faqJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',

@@ -435,7 +435,7 @@ html[data-js]:not([data-ready]) #diadikasia { contain-intrinsic-size: auto 1480p
 html[data-js]:not([data-ready]) #pilot { contain-intrinsic-size: auto 1360px; }
 html[data-js]:not([data-ready]) #idrytes { contain-intrinsic-size: auto 710px; }
 html[data-js]:not([data-ready]) #erotiseis { contain-intrinsic-size: auto 830px; }
-html[data-js]:not([data-ready]) #klisi { contain-intrinsic-size: auto 1930px; }
+html[data-js]:not([data-ready]) #klisi { contain-intrinsic-size: auto 1990px; }
 html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 450px; }
 @media (min-width: 1024px) {
   html[data-js]:not([data-ready]) #provlima { contain-intrinsic-size: auto 490px; }
@@ -447,7 +447,7 @@ html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 450px; }
   html[data-js]:not([data-ready]) #pilot { contain-intrinsic-size: auto 726px; }
   html[data-js]:not([data-ready]) #idrytes { contain-intrinsic-size: auto 410px; }
   html[data-js]:not([data-ready]) #erotiseis { contain-intrinsic-size: auto 610px; }
-  html[data-js]:not([data-ready]) #klisi { contain-intrinsic-size: auto 740px; }
+  html[data-js]:not([data-ready]) #klisi { contain-intrinsic-size: auto 966px; }
   html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 235px; }
 }
 

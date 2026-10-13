@@ -8,13 +8,13 @@ import { cn } from '@/lib/cn';
 import { MENU_SHEET_ID, useMobileChrome } from './chrome/MobileChrome';
 
 /**
- * Mobile bottom DOCK — αντικαθιστά το παλιό sticky CTA bar:  [ ☰ ]  [ Κλείστε τον Χάρτη AI — 30′ δωρεάν → ]
+ * Mobile bottom DOCK — αντικαθιστά το παλιό sticky CTA bar:  [ ☰ ]  [ Ζητήστε τον Χάρτη AI — 30′ δωρεάν → ]
  * (κουμπί menu 48×48 + το CTA με το ΠΛΗΡΕΣ label να γεμίζει τον υπόλοιπο χώρο). Μόνο < 1024px.
  *
  * Κανόνες εμφάνισης/απόκρυψης — ΑΚΡΙΒΩΣ οι ίδιοι με το sticky CTA της Φάσης 4:
  *  • ΕΜΦΑΝΙΖΕΤΑΙ όταν το CTA του hero βγει από το viewport.
  *  • ΚΡΥΒΕΤΑΙ όσο φαίνεται οποιοδήποτε άλλο CTA (`[data-cta]`) ή το booking (#klisi, από το πρώτο pixel
- *    του και 120px νωρίτερα) — ώστε να μην καλύψει ποτέ φόρμα / Cal.com.
+ *    του και 120px νωρίτερα) — ώστε να μην καλύψει ποτέ τη φόρμα.
  *  • Στοιβάζεται ΠΑΝΩ από το cookie banner (--cookie-h).
  *  • Υποχωρεί στο mini-bar του calculator (html[data-minibar] → βλ. globals.css).
  * Ενημερώνει το MobileChrome (dockVisible) ώστε το top bar να κρύψει το δικό του ☰.

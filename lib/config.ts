@@ -13,7 +13,7 @@ import { formatEUR, formatEURRange } from './format';
 // ── ΤΟ ΕΝΑ ΚΑΙ ΜΟΝΑΔΙΚΟ CTA ────────────────────────────────────────────────
 // Χρησιμοποιείται αυτούσιο σε ΚΑΘΕ κουμπί του site. Καμία παραλλαγή.
 export const CTA = {
-  label: 'Κλείστε τον Χάρτη AI — 30′ δωρεάν',
+  label: 'Ζητήστε τον Χάρτη AI — 30′ δωρεάν',
   labelShort: 'Χάρτης AI — 30′ δωρεάν', // μόνο για το sticky bar σε <360px
   micro: 'Χωρίς πωλήσεις. Φεύγετε με γραπτό πλάνο και εκτίμηση ROI.',
   // '/#klisi' ώστε το ίδιο κουμπί να δουλεύει και από το /about.
@@ -79,28 +79,26 @@ export const BRAND = {
 } as const;
 
 /**
- * Νομικά στοιχεία της εταιρείας (privacy / terms) — ΜΙΑ πηγή. Συμπληρώστε τα όλα πριν από το production:
- * το production build ΑΠΟΤΥΓΧΑΝΕΙ όσο κάποιο είναι null (βλ. lib/legal.ts). Σε development εμφανίζονται ως TODO blocks.
+ * Υπεύθυνοι επεξεργασίας — ΜΙΑ πηγή για /privacy και /terms. Προς το παρόν ΔΕΝ υπάρχει εταιρεία: οι δύο ιδρυτές
+ * είναι ατομικά υπεύθυνοι επεξεργασίας (χωρίς ΑΦΜ / ΓΕΜΗ / διεύθυνση — δεν τα ζητάμε και δεν τα εμφανίζουμε).
+ *
+ * Το build ΑΠΟΤΥΓΧΑΝΕΙ όσο λείπει κάποιο από: τα δύο ονόματα, η πόλη, το CONTACT.email (βλ. lib/legal.ts).
+ * Σε development τα κενά εμφανίζονται ως TODO blocks.
  */
 export const LEGAL = {
-  entityName: null as string | null, // {{TODO: πλήρης επωνυμία}}
-  afm: null as string | null, // {{TODO: ΑΦΜ}}
-  doy: null as string | null, // {{TODO: ΔΟΥ}}
-  seat: null as string | null, // {{TODO: έδρα}}
-  courtCity: null as string | null, // {{TODO: πόλη έδρας για τα δικαστήρια}}
+  controllerA: 'Παναγιώτης Γραμματικού',
+  controllerB: 'Χρήστος Αβραμίδης',
+  city: null as string | null, // {{TODO: πόλη}} — η πόλη των ιδρυτών, π.χ. 'Θεσσαλονίκη'
 };
 
 /**
- * Το επίσημο email επικοινωνίας — ΜΙΑ σταθερά. {{TODO: hello@<domain>}}
- * Όσο είναι TODO, το footer δείχνει το BRAND.email (Gmail) ως fallback.
+ * Το email επικοινωνίας — ΜΙΑ σταθερά. Προς το παρόν είναι το υπάρχον Gmail· όταν υπάρξει domain email,
+ * αλλάζει μόνο εδώ (όλο το site περνά από το contactEmail()).
  */
 export const CONTACT = {
-  email: '{{TODO: hello@<domain>}}',
+  email: BRAND.email,
 };
-export const contactEmail = () => (CONTACT.email.includes('{{TODO') ? BRAND.email : CONTACT.email);
-
-/** Cal.com: π.χ. 'auragram/xartis-ai'. Χωρίς αυτό δείχνουμε fallback. */
-export const CAL_LINK = process.env.NEXT_PUBLIC_CAL_LINK || '';
+export const contactEmail = () => (!CONTACT.email || CONTACT.email.includes('{{TODO') ? BRAND.email : CONTACT.email);
 
 // ── INDEXING ───────────────────────────────────────────────────────────────
 /**

@@ -674,11 +674,9 @@ export const offer = {
     'Αν στο τέλος των 30 λεπτών δεν υπάρχει τουλάχιστον ένα automation που αξίζει να φτιαχτεί, θα το πούμε εμείς πρώτοι — και θα σας στείλουμε το roadmap δωρεάν να το κάνετε μόνοι σας.',
 };
 
-/** Fallback χωρίς JavaScript (<noscript> στο booking): η φόρμα και το ημερολόγιο χρειάζονται JS. */
+/** Fallback χωρίς JavaScript (<noscript> στο booking): η φόρμα χρειάζεται JS. */
 export const bookingNoscript = {
-  text: 'Η φόρμα κράτησης χρειάζεται JavaScript. Κλείστε ραντεβού απευθείας:',
-  calLabel: 'Κλείστε ραντεβού στο Cal.com',
-  emailLabel: 'ή γράψτε μας στο',
+  text: 'Η φόρμα χρειάζεται JavaScript.',
   emailOnly: 'Γράψτε μας στο',
 };
 
