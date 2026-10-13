@@ -22,7 +22,6 @@ import { MENU_SHEET_ID, useMobileChrome } from './chrome/MobileChrome';
 export function StickyCta() {
   const { openSheet, setDockVisible } = useMobileChrome();
   const [heroOut, setHeroOut] = useState(false);
-  const [heroFaded, setHeroFaded] = useState(false);
   const [otherVisible, setOtherVisible] = useState(false);
 
   useEffect(() => {
@@ -81,14 +80,6 @@ export function StickyCta() {
     });
     mo.observe(document.body, { childList: true, subtree: true });
 
-    // Mobile «phone settle»: το HeroChat βάζει data-hero-faded στο <html> όταν το κείμενο του hero (άρα και το CTA του) έχει opacity < 0.5.
-    // Το IntersectionObserver δεν βλέπει opacity — χωρίς αυτό θα υπήρχε διάστημα όπου το CTA του hero είναι αόρατο και το dock δεν έχει βγει ακόμα.
-    const root = document.documentElement;
-    const fadedSync = () => setHeroFaded(root.hasAttribute('data-hero-faded'));
-    fadedSync();
-    const fmo = new MutationObserver(fadedSync);
-    fmo.observe(root, { attributes: true, attributeFilter: ['data-hero-faded'] });
-
     // Ανάλυση: σταθερή συμπεριφορά (δεν άλλαξε) — scroll depth 75%.
     let raf = 0;
     const update = () => {
@@ -108,13 +99,12 @@ export function StickyCta() {
       window.removeEventListener('scroll', onScroll);
       if (raf) cancelAnimationFrame(raf);
       mo.disconnect();
-      fmo.disconnect();
       io.disconnect();
       ioForm.disconnect();
     };
   }, []);
 
-  const show = (heroOut || heroFaded) && !otherVisible;
+  const show = heroOut && !otherVisible;
 
   useEffect(() => {
     setDockVisible(show);
