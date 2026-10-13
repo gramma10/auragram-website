@@ -16,14 +16,37 @@ const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
-// Κείμενο hero: opacity 1 ως 15% του settle → 0 στο 70% (ease-in-out)· ταυτόχρονα lift −24px και scale 1 → .98
-const FADE_FROM = 0.15;
-const FADE_TO = 0.7;
+// Κείμενο hero: opacity 1 → 0 ΑΚΡΙΒΩΣ μέχρι το τέλος του settle (p = 1) — όσο το κινητό δεν έχει φτάσει στο κέντρο, το κείμενο δεν έχει εξαφανιστεί.
+// Ταυτόχρονα lift −24px και scale 1 → .98.
+const FADE_FROM = 0.08;
+const FADE_TO = 1;
 const LIFT = -24;
 
-// Pin → συνομιλία: πρόοδος του pin (0 → 1) που αποκαλύπτει κάθε βήμα. Μήνυμα 1 φαίνεται ήδη πριν το pin.
-// [μήνυμα 2, μήνυμα 3, μήνυμα 4, μήνυμα 5, chip «Ραντεβού κλείστηκε», toast]
-const PIN_STEPS = [0.15, 0.35, 0.55, 0.72, 0.85, 0.95];
+// Pin → συνομιλία: 6 βήματα × 90px scroll = 540px pin. Βήμα n (1..6 = μήνυμα 2, 3, 4, 5, chip «Ραντεβού κλείστηκε», toast) φαίνεται όταν το scroll
+// μέσα στο pin φτάσει (n − ½)·90px — δηλ. ομοιόμορφα απλωμένα, κάθε κατάσταση «κρατά» 90px. Το βήμα είναι ΣΥΝΑΡΤΗΣΗ της θέσης (αντιστρέψιμο).
+// Το μήνυμα 1 φαίνεται ήδη πριν το pin. Το ύψος του .hero-pin (globals.css) = PIN_PX.
+const STEP_PX = 90;
+const STEPS = 6;
+const PIN_PX = STEP_PX * STEPS;
+// Idle fallback: αν ο επισκέπτης μείνει μέσα στο pin χωρίς scroll για IDLE_MS, προχωρά ένα βήμα ανά ADVANCE_MS μέχρι να ολοκληρωθεί.
+const IDLE_MS = 3000;
+const ADVANCE_MS = 1000;
+// Αγνοούμε resize που αλλάζει ΜΟΝΟ το ύψος κατά λιγότερο από αυτό (η μπάρα του Safari που μαζεύεται/ανοίγει).
+const TOOLBAR_RESIZE_PX = 120;
+
+const stepFromScroll = (y: number, y1: number) => Math.min(STEPS, Math.max(0, Math.floor((y - y1) / STEP_PX + 0.5)));
+
+// cubic-bezier(.42,0,.58,1) (CSS ease-in-out) — για να υπολογίσουμε αναλυτικά τη θέση του float χωρίς να διαβάσουμε το DOM.
+const easeInOutCss = (x: number) => {
+  let t = x;
+  for (let i = 0; i < 6; i++) {
+    const cx = 3 * (1 - t) * (1 - t) * t * 0.42 + 3 * (1 - t) * t * t * 0.58 + t * t * t - x;
+    const d = 3 * (1 - t) * (1 - t) * 0.42 + 6 * (1 - t) * t * (0.58 - 0.42) + 3 * t * t * (1 - 0.58);
+    if (Math.abs(d) < 1e-6) break;
+    t -= cx / d;
+  }
+  return 3 * (1 - t) * t * t + t * t * t;
+};
 
 const TILT = -9; // deg, STATE 0
 const SCALE0 = 0.82; // STATE 0
@@ -33,37 +56,32 @@ const DOCK_FALLBACK = 72;
 /**
  * Το hero visual: πραγματική ελληνική συνομιλία AI Agent — ΕΝΑ κινητό.
  *
- * Mobile (< 640px, χωρίς reduced motion) — «phone settle»:
+ * Mobile (< 640px, χωρίς reduced motion) — «phone settle» + scrubbing συνομιλία:
  *  • STATE 0: κεκλιμένο (−9°), scale .82, κρυφοκοιτάει από το κάτω μέρος της πρώτης οθόνης (CSS: .hero-phone). Ήπιο idle float ±5px/5s ΜΟΝΟ
  *    όσο scrollY ≈ 0. Δείχνει ΜΟΝΟ το πρώτο μήνυμα του πελάτη· το toast είναι κρυμμένο.
- *  • SETTLE: scroll-linked (όχι χρονικό). Το διάστημα είναι [0, y1] όπου y1 = το scroll στο οποίο το sticky «πιάνει» (το κινητό φτάνει στη
- *    θέση pin = κέντρο ανάμεσα σε top bar και dock). rotate → 0° και scale → 1 (ease-out cubic) ΑΚΡΙΒΩΣ μέχρι εκεί, άρα στο 100% του settle
- *    το κινητό είναι ευθύ, πλήρους μεγέθους ΚΑΙ κεντραρισμένο — και δεν περνά ποτέ πάνω από το κείμενο του hero που φεύγει (η θέση ακολουθεί
- *    τη ροή της σελίδας, όχι transform).
- *  • PINNED: καρφωμένο ~35svh scroll (ο spacer .hero-pin — το padding ΔΕΝ δουλεύει με sticky). Η συνομιλία ξεκινά ΜΙΑ φορά τη στιγμή που
- *    ολοκληρώνεται το settle και δεν ξαναρχίζει ποτέ· το toast βγαίνει από το άκρο του κινητού στο βήμα κράτησης· η λεζάντα εμφανίζεται.
- *  • ΣΥΝΟΜΙΛΙΑ SCROLL-DRIVEN: μέσα στο pin κάθε βήμα αποκαλύπτεται σε συγκεκριμένη πρόοδο (PIN_STEPS: .15/.35/.55/.72/.85/.95 → μηνύματα 2–5, chip,
- *    toast). Ορατό βήμα = max(scroll, timer): το timer (ξεκινά στο settle) ολοκληρώνει τη συνομιλία μόνο του αν ο επισκέπτης σταματήσει· τα βήματα
- *    μόνο προχωρούν (latched) — scroll προς τα πάνω δεν κρύβει τίποτα.
- *  • RELEASE: το sticky λήγει και το κινητό φεύγει κανονικά.
- *  • CINEMATIC (Round 8): (1) το κείμενο του hero ξεθωριάζει + ανεβαίνει (15% → 70% του settle)· (2) το κινητό «ανεβαίνει μόνο του»: η θέση του
- *    στην οθόνη = lerp(startTop, pinTop, easeInOutCubic(p)) — transform translateY = (καμπύλη − φυσική θέση ροής), που είναι ΑΚΡΙΒΩΣ 0 στο p=0 και
- *    στο p=1 (εκεί πιάνει το sticky) → απόλυτα ομαλό hand-off και προς τις δύο κατευθύνσεις· (3) levitation: σκιά/λάμψη που στενεύει καθώς
- *    ανεβαίνει + ήπιο float ±2.5px/6s όσο είναι καρφωμένο (σε εσωτερικό wrapper — δεν συγκρούεται με το scroll transform).
- *  Η λειτουργία (scroll-driven ή όχι) είναι ΑΝΤΙΔΡΑΣΤΙΚΗ στα media queries: αλλαγή πλάτους παραθύρου / DevTools device mode / περιστροφή
- *  οθόνης μετά το φόρτωμα δεν αφήνει το κινητό κολλημένο στο STATE 0 (το CSS αντιδρά ζωντανά, άρα και το JS).
- *  Κανόνες: ΠΟΤΕ preventDefault/snap/wheel interception· ένας passive, rAF-throttled scroll handler· γράφουμε μόνο transform.
+ *  • SETTLE: scroll-linked [0, y1], y1 = το scroll στο οποίο το sticky «πιάνει» (το κινητό φτάνει στη θέση pin = κέντρο ανάμεσα σε top bar και
+ *    dock). rotate → 0° και scale → 1 ακριβώς μέχρι εκεί. Το κείμενο του hero ξεθωριάζει ΜΕΧΡΙ το y1 (όχι νωρίτερα — δεν υπάρχει κενή οθόνη).
+ *  • PINNED: καρφωμένο για PIN_PX = 6 × 90px scroll (spacer .hero-pin). Μέσα στο pin η συνομιλία είναι ΣΥΝΑΡΤΗΣΗ της θέσης scroll:
+ *    step = floor((y − y1)/90 + ½) ∈ 0..6 → μηνύματα 2–5, chip, toast. ΑΝΤΙΣΤΡΕΨΙΜΟ: scroll προς τα πάνω κρύβει τις φούσκες με την ίδια μετάβαση
+ *    ανάποδα (opacity + translateY, 200ms). Όποιος περάσει το pin βλέπει ολοκληρωμένη τη συνομιλία.
+ *  • IDLE FALLBACK: αν ο επισκέπτης μείνει μέσα στο pin 3″ χωρίς scroll → +1 βήμα/1″ μέχρι το τέλος. Οποιοδήποτε scroll ακυρώνει το auto-advance και
+ *    από εκεί και πέρα η θέση ορίζει ξανά την κατάσταση.
+ *  • RELEASE: το sticky λήγει· το stage έχει αρνητικό margin-bottom ίσο με το «χαμένο» ύψος του scale (--gapfix), ώστε το proof bar να ακολουθεί
+ *    αμέσως μετά τη λεζάντα (χωρίς κενό spacer).
+ *  Απόδοση: ΟΛΕΣ οι μετρήσεις (viewport, dock, ύψη, stageTop, y1, pinEnd) γίνονται στο measure() — mount, fonts.ready, resize που αλλάζει πλάτος ή
+ *  ύψος ≥ 120px, ResizeObserver. Ο scroll handler (ένας passive, rAF-throttled) δεν διαβάζει ΚΑΝΕΝΑ layout/DOM — μόνο scrollY και αριθμητικά· γράφει
+ *  μόνο transform (translate3d/rotate/scale) και opacity. will-change ΜΟΝΟ όσο το κινητό/κείμενο είναι μέσα στην κίνηση. Τα aura blobs και το
+ *  pulse-dot του κινητού σταματούν όσο τρέχει το hero scroll (html[data-hero-anim]). Η λειτουργία είναι ΑΝΤΙΔΡΑΣΤΙΚΗ στα media queries
+ *  (αλλαγή πλάτους / device mode / περιστροφή). Κανόνες: ΠΟΤΕ preventDefault/snap/wheel interception.
  */
 export function HeroChat() {
   // Το toast εμφανίζεται όταν ο agent κλείσει το ραντεβού (τελευταίο βήμα του σεναρίου).
   const [booked, setBooked] = useState(false);
-  // Mobile scroll-driven (ή όχι): ζωντανό, από τα media queries.
-  const [scrollDriven, setScrollDriven] = useState(scrollMode);
-  // Μόνο σε scroll-driven mode: έγινε το settle (latched όσο μένουμε σε αυτό το mode).
-  const [settled, setSettled] = useState(false);
-  const started = !scrollDriven || settled;
-  // Βήμα που έχει φτάσει το scroll στο pin (0..PIN_STEPS.length)· latched — μόνο αυξάνεται, ποτέ δεν επιστρέφει.
-  const [scrollStep, setScrollStep] = useState(0);
+  // Mobile scroll-driven (ή όχι): ζωντανό, από τα media queries. ΞΕΚΙΝΑ ΠΑΝΤΑ false (όπως ο server): ένα αρχικό state που διαφέρει από το SSR
+  // αφήνει στο DOM τα className του server (το React δεν διορθώνει mismatch attributes στο hydration) — π.χ. duration-500 αντί για duration-200.
+  const [scrollDriven, setScrollDriven] = useState(false);
+  // Βήμα συνομιλίας 0..6 (scroll-driven mode): από τη θέση scroll, ή από το idle fallback.
+  const [step, setStep] = useState(0);
 
   const stage = useRef<HTMLDivElement>(null);
   const phone = useRef<HTMLDivElement>(null);
@@ -85,7 +103,7 @@ export function HeroChat() {
     };
   }, []);
 
-  // ── Scroll-driven settle ──────────────────────────────────────────────────
+  // ── Scroll-driven settle + scrubbing ──────────────────────────────────────
   useEffect(() => {
     const P = phone.current;
     const S = stage.current;
@@ -96,32 +114,69 @@ export function HeroChat() {
     const root = document.documentElement;
     if (!scrollDriven || !P || !S || !F || !C || !SH) return;
 
+    // ── cache μετρήσεων (γράφονται ΜΟΝΟ από το measure()) ──
+    let vh = window.innerHeight; // viewport height (αγνοούμε τις αλλαγές της μπάρας του Safari)
+    let vw = window.innerWidth;
     let sF = 1; // τελικό scale (≤ 1)
-    let y1 = 0.6 * window.innerHeight; // scroll στο οποίο ολοκληρώνεται το settle (= στο οποίο το sticky «πιάνει»)
+    let y1 = 0.6 * vh; // scroll στο οποίο ολοκληρώνεται το settle (= στο οποίο το sticky «πιάνει»)
     let stageTop = 0; // θέση του stage στο έγγραφο (= STATE 0 θέση του κινητού στην οθόνη, scrollY = 0)
     let ptop = 0; // pinTop
-    let pinEnd = 0; // scrollY όπου λήγει το sticky
+    let pinEnd = 0; // scrollY όπου λήγει το pin (πραγματικό ή «εικονικό» αν το CSS έχει pin 0)
+
+    // ── κατάσταση του handler ──
     let floatMode: '' | 'top' | 'pin' = '';
+    let floatAnim: Animation | null = null;
     let textFx = false; // will-change στο κείμενο
     let lastFade = -1;
-    let lastTy = NaN;
     let done = false;
-    let ranged = false; // will-change ενεργό
+    let ranged = false; // will-change στο κινητό
+    let animActive = false; // html[data-hero-anim]
     let lastT = '';
-    let stepSeen = 0; // τελευταίο βήμα που στείλαμε στο ChatPlayer
+    let stepNow = 0; // το βήμα που έχουμε ήδη στείλει στο React (από scroll ή auto)
     let raf = 0;
+    let idleT: ReturnType<typeof setTimeout> | 0 = 0;
+    let advT: ReturnType<typeof setInterval> | 0 = 0;
 
-    setSettled(false);
-    setScrollStep(0);
+    setStep(0);
     P.dataset.armed = '';
 
+    const pushStep = (n: number) => {
+      if (n === stepNow) return;
+      stepNow = n;
+      setStep(n);
+    };
+    const cancelAuto = () => {
+      if (idleT) clearTimeout(idleT);
+      if (advT) clearInterval(advT);
+      idleT = 0;
+      advT = 0;
+    };
+    // Idle fallback: ΜΟΝΟ μέσα στο pin και μόνο όσο η συνομιλία δεν έχει ολοκληρωθεί.
+    const armIdle = (y: number, posStep: number) => {
+      cancelAuto();
+      if (y < y1 || y > pinEnd || posStep >= STEPS) return;
+      idleT = setTimeout(() => {
+        idleT = 0;
+        const advance = () => {
+          if (stepNow >= STEPS) {
+            if (advT) clearInterval(advT);
+            advT = 0;
+            return;
+          }
+          pushStep(stepNow + 1);
+        };
+        advance();
+        advT = setInterval(advance, ADVANCE_MS);
+      }, IDLE_MS);
+    };
+
     const measure = () => {
-      // καλείται από ResizeObserver / resize (όχι σύγχρονα στο mount)
-      const vh = window.innerHeight;
+      // ΜΟΝΗ θέση ανάγνωσης layout: mount, fonts.ready, αληθινό resize, ResizeObserver — ΠΟΤΕ μέσα στο scroll.
       const dock = document.querySelector<HTMLElement>('.sticky-cta');
       const dockH = dock ? dock.offsetHeight : DOCK_FALLBACK;
       const capH = C.offsetHeight; // λεζάντα (με το padding της)
-      const Hf = P.offsetHeight - capH; // ΤΟ ΚΙΝΗΤΟ (χωρίς τη λεζάντα)
+      const totalH = P.offsetHeight; // κινητό + λεζάντα (layout, χωρίς transform)
+      const Hf = totalH - capH; // ΤΟ ΚΙΝΗΤΟ (χωρίς τη λεζάντα)
       const avail = vh - NAV_B - dockH;
       // Το κινητό κεντραρισμένο ανάμεσα σε top bar και dock, ΚΑΙ η λεζάντα να χωρά από κάτω: (avail − Hf·s)/2 ≥ capH·s
       sF = Math.max(SCALE0, Math.min(1, avail / (Hf + 2 * capH)));
@@ -131,8 +186,60 @@ export function HeroChat() {
       stageTop = S.getBoundingClientRect().top + window.scrollY;
       ptop = top;
       y1 = Math.max(120, stageTop - top);
-      pinEnd = y1 + (S.querySelector<HTMLElement>('.hero-pin')?.offsetHeight ?? 0);
+      const pinH = S.querySelector<HTMLElement>('.hero-pin')?.offsetHeight ?? 0;
+      // Σε πολύ χαμηλές οθόνες το CSS βγάζει το pin (0)· τα βήματα της συνομιλίας εξακολουθούν να προχωρούν με το scroll μετά το settle.
+      pinEnd = y1 + (pinH > 1 ? pinH : PIN_PX);
       P.style.setProperty('--y1', `${Math.round(y1)}px`);
+      // Το scale μικραίνει οπτικά το κινητό αλλά ΟΧΙ το box του στη ροή → αρνητικό margin ίσο με το χαμένο ύψος, ώστε το proof bar να ακολουθεί αμέσως.
+      S.style.setProperty('--gapfix', `${Math.max(0, totalH * (1 - sF)).toFixed(1)}px`);
+    };
+
+    // float: WAAPI (compositor) χωρίς καμία ανάγνωση DOM στην έξοδο — η τρέχουσα θέση υπολογίζεται αναλυτικά από το progress.
+    const floatY = (mode: 'top' | 'pin', progress: number) => {
+      if (mode === 'top') {
+        // 0%,100% → −5 · 50% → +5, ease-in-out ανά διάστημα
+        const seg = progress < 0.5 ? progress / 0.5 : (progress - 0.5) / 0.5;
+        const e = easeInOutCss(seg);
+        return progress < 0.5 ? -5 + 10 * e : 5 - 10 * e;
+      }
+      // 0 → −2.5 (25%) → +2.5 (75%) → 0 (100%)
+      if (progress < 0.25) return -2.5 * easeInOutCss(progress / 0.25);
+      if (progress < 0.75) return -2.5 + 5 * easeInOutCss((progress - 0.25) / 0.5);
+      return 2.5 - 2.5 * easeInOutCss((progress - 0.75) / 0.25);
+    };
+    const setFloat = (want: '' | 'top' | 'pin') => {
+      if (floatAnim && floatMode) {
+        const prog = Number(floatAnim.effect?.getComputedTiming().progress ?? 0) % 1;
+        const cur = floatY(floatMode, prog);
+        floatAnim.cancel();
+        floatAnim = null;
+        // έξοδος ΟΜΑΛΗ από την τρέχουσα θέση στο 0
+        F.animate([{ transform: `translate3d(0, ${cur.toFixed(2)}px, 0)` }, { transform: 'translate3d(0, 0, 0)' }], {
+          duration: 220,
+          easing: 'ease-out',
+        });
+      }
+      if (want === 'top') {
+        floatAnim = F.animate(
+          [
+            { transform: 'translate3d(0,-5px,0)', easing: 'ease-in-out' },
+            { transform: 'translate3d(0,5px,0)', easing: 'ease-in-out', offset: 0.5 },
+            { transform: 'translate3d(0,-5px,0)' },
+          ],
+          { duration: 5000, iterations: Infinity }
+        );
+      } else if (want === 'pin') {
+        floatAnim = F.animate(
+          [
+            { transform: 'translate3d(0,0,0)', easing: 'ease-in-out' },
+            { transform: 'translate3d(0,-2.5px,0)', easing: 'ease-in-out', offset: 0.25 },
+            { transform: 'translate3d(0,2.5px,0)', easing: 'ease-in-out', offset: 0.75 },
+            { transform: 'translate3d(0,0,0)' },
+          ],
+          { duration: 6000, iterations: Infinity }
+        );
+      }
+      floatMode = want;
     };
 
     const update = () => {
@@ -144,27 +251,33 @@ export function HeroChat() {
       // μέχρι να πιάσει το sticky). ty = επιθυμητή − flow· ακριβώς 0 στο p=0 (startTop = stageTop) και στο p=1 (stageTop − y1 = ptop).
       const lift = easeInOutCubic(p);
       const ty = p < 1 ? stageTop + (ptop - stageTop) * lift - (stageTop - y) : 0;
-      const t = `translateY(${ty.toFixed(2)}px) rotate(${(TILT * (1 - e)).toFixed(2)}deg) scale(${(SCALE0 + (sF - SCALE0) * e).toFixed(4)})`;
+      const t = `translate3d(0, ${ty.toFixed(2)}px, 0) rotate(${(TILT * (1 - e)).toFixed(2)}deg) scale(${(SCALE0 + (sF - SCALE0) * e).toFixed(4)})`;
       if (t !== lastT) {
         lastT = t;
         P.style.transform = t;
       }
-      lastTy = ty;
       // will-change μόνο όσο είμαστε μέσα στο εύρος της κίνησης
       const inRange = p < 1;
       if (inRange !== ranged) {
         ranged = inRange;
         P.style.willChange = inRange ? 'transform' : '';
       }
+      // Παύση των διακοσμητικών animations (aura blobs, pulse-dot του κινητού) όσο τρέχει το hero scroll
+      const anim = y > 1 && y < pinEnd + 40;
+      if (anim !== animActive) {
+        animActive = anim;
+        if (anim) root.setAttribute('data-hero-anim', '');
+        else root.removeAttribute('data-hero-anim');
+      }
 
       // Σκιά/λάμψη κάτω από το κινητό: στενεύει (scaleX 1 → .7) και ξεθωριάζει (opacity 1 → .4 ≙ cyan .25 → .10) καθώς ανεβαίνει
-      SH.style.transform = `scaleX(${(1 - 0.3 * lift).toFixed(3)})`;
+      SH.style.transform = `scale3d(${(1 - 0.3 * lift).toFixed(3)}, 1, 1)`;
       SH.style.opacity = (1 - 0.6 * lift).toFixed(3);
 
-      // Κείμενο hero: opacity 1 → 0 (15% → 70%, ease-in-out) + lift −24px + scale 1 → .98 — scroll-linked, άρα πλήρως αντιστρέψιμο
+      // Κείμενο hero: opacity 1 → 0 (FADE_FROM → FADE_TO = τέλος του settle) + lift −24px + scale 1 → .98 — scroll-linked, αντιστρέψιμο
       if (T) {
         const f = easeInOutCubic(clamp01((p - FADE_FROM) / (FADE_TO - FADE_FROM)));
-        if (Math.abs(f - lastFade) > 0.002) {
+        if (Math.abs(f - lastFade) > 0.002 || f === 0 || f === 1) {
           lastFade = f;
           if (f <= 0) {
             T.style.opacity = '';
@@ -172,7 +285,7 @@ export function HeroChat() {
             T.style.pointerEvents = '';
           } else {
             T.style.opacity = (1 - f).toFixed(3);
-            T.style.transform = `translateY(${(LIFT * f).toFixed(2)}px) scale(${(1 - 0.02 * f).toFixed(4)})`;
+            T.style.transform = `translate3d(0, ${(LIFT * f).toFixed(2)}px, 0) scale(${(1 - 0.02 * f).toFixed(4)})`;
             T.style.pointerEvents = f >= 1 ? 'none' : ''; // μόνο όταν είναι πλήρως αόρατο
           }
           const fx = f > 0 && f < 1;
@@ -186,48 +299,31 @@ export function HeroChat() {
         }
       }
 
-      // Float: «top» (±5px/5s) μόνο στην κορυφή· «pin» (±2.5px/6s) μόνο όσο είναι καρφωμένο. Έξοδος ΟΜΑΛΗ (από την τρέχουσα θέση στο 0).
+      // Float: «top» (±5px/5s) μόνο στην κορυφή· «pin» (±2.5px/6s) μόνο όσο είναι καρφωμένο.
       const want: '' | 'top' | 'pin' = y < 4 ? 'top' : y >= y1 && y <= pinEnd ? 'pin' : '';
-      if (want !== floatMode) {
-        if (floatMode) {
-          const cur = getComputedStyle(F).transform; // τρέχουσα θέση του float
-          F.classList.remove('is-idle', 'is-pin');
-          F.style.transform = cur === 'none' ? '' : cur;
-          void F.offsetWidth;
-          F.style.transition = 'transform 220ms ease-out';
-          F.style.transform = 'translateY(0px)';
-        }
-        if (want) {
-          F.style.transition = '';
-          F.style.transform = '';
-          F.classList.add(want === 'top' ? 'is-idle' : 'is-pin');
-        }
-        floatMode = want;
-      }
+      if (want !== floatMode) setFloat(want);
 
-      // Συνομιλία: πρόοδος μέσα στο pin → βήμα. Ίδιος handler (κανένα επιπλέον listener). Μόνο αυξάνεται.
-      const pinSpan = pinEnd - y1;
-      if (pinSpan > 1) {
-        const pp = clamp01((y - y1) / pinSpan);
-        let n = 0;
-        while (n < PIN_STEPS.length && pp >= PIN_STEPS[n]) n++;
-        if (n > stepSeen) {
-          stepSeen = n;
-          setScrollStep(n);
-        }
-      }
+      // Συνομιλία: το βήμα ορίζεται ΑΠΟ ΤΗ ΘΕΣΗ (αντιστρέψιμο). Οποιοδήποτε scroll ακυρώνει το auto-advance και το ξαναοπλίζει.
+      const posStep = stepFromScroll(y, y1);
+      pushStep(posStep);
+      armIdle(y, posStep);
 
       if (p >= 1 && !done) {
-        done = true; // latched: δεν ξαναρχίζει
+        done = true; // latched: η λεζάντα δεν κρύβεται ξανά
         P.dataset.settled = '';
-        setSettled(true);
       }
     };
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
     const onResize = () => {
-      measure(); // το ύψος του viewport άλλαξε (περιστροφή, μπάρα browser) → νέα θέση pin
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      // Μόνο το ύψος άλλαξε κατά < 120px = μπάρα του Safari που μαζεύεται/ανοίγει → τίποτα δεν ξαναμετριέται, τίποτα δεν πηδά.
+      if (w === vw && Math.abs(h - vh) < TOOLBAR_RESIZE_PX) return;
+      vw = w;
+      vh = h;
+      measure();
       schedule();
     };
 
@@ -239,22 +335,30 @@ export function HeroChat() {
     if (T) ro.observe(T); // αλλαγή ύψους του κειμένου (font swap) μετακινεί το stage → νέο stageTop / y1
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', onResize);
+    let disposed = false;
+    document.fonts?.ready.then(() => {
+      if (disposed) return;
+      measure();
+      schedule();
+    });
+    measure();
     schedule();
 
     return () => {
+      disposed = true;
+      cancelAuto();
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', onResize);
       ro.disconnect();
       if (raf) cancelAnimationFrame(raf);
+      if (floatAnim) floatAnim.cancel();
       delete P.dataset.armed;
       delete P.dataset.settled;
       P.style.transform = '';
       P.style.willChange = '';
       P.style.removeProperty('--ptop');
       P.style.removeProperty('--y1');
-      F.classList.remove('is-idle', 'is-pin');
-      F.style.transform = '';
-      F.style.transition = '';
+      S.style.removeProperty('--gapfix');
       SH.style.transform = '';
       SH.style.opacity = '';
       if (T) {
@@ -264,6 +368,7 @@ export function HeroChat() {
         T.style.willChange = '';
       }
       root.removeAttribute('data-hero-faded');
+      root.removeAttribute('data-hero-anim');
     };
   }, [scrollDriven]);
 
@@ -276,7 +381,8 @@ export function HeroChat() {
           <div
             aria-hidden
             className={cn(
-              'absolute -right-3 -top-5 z-20 flex items-center gap-3 rounded-2xl border border-white/[0.12] bg-night-700 px-3.5 py-3 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.75)] transition-all duration-500 ease-out max-sm:right-0 max-sm:top-[104px] sm:-right-10',
+              'absolute -right-3 -top-5 z-20 flex items-center gap-3 rounded-2xl border border-white/[0.12] bg-night-700 px-3.5 py-3 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.75)] transition-[opacity,transform] ease-out max-sm:right-0 max-sm:top-[104px] sm:-right-10',
+              scrollDriven ? 'duration-200' : 'duration-500',
               booked ? 'translate-x-0 translate-y-0 scale-100 opacity-100' : '-translate-y-3 opacity-0 max-sm:translate-x-4 max-sm:translate-y-0 max-sm:scale-95'
             )}
           >
@@ -294,15 +400,14 @@ export function HeroChat() {
           <ChatPlayer
             key={scrollDriven ? 'scroll' : 'free'}
             scenario={heroPhone.scenario}
-            playing={started}
-            scrollStep={scrollDriven ? scrollStep : 0}
+            controlledStep={scrollDriven ? step : undefined}
             loop={!scrollDriven}
             screenClassName="h-[600px] max-h-[min(70svh,calc(100svh_-_236px))] sm:max-h-none"
             onFinishedChange={setBooked}
           />
 
           {/* Λεζάντα + σκιά/λάμψη (levitation) κάτω από το κινητό: ελλειπτικό radial-gradient, το θόλωμα είναι στο gradient (όχι filter),
-              γράφουμε μόνο transform (scaleX) + opacity ανά scroll. Αγκυρωμένη στο κάτω άκρο του κινητού (πάνω άκρο αυτού του wrapper). */}
+              γράφουμε μόνο transform (scale3d) + opacity ανά scroll. Αγκυρωμένη στο κάτω άκρο του κινητού (πάνω άκρο αυτού του wrapper). */}
           <div className="relative">
             <div
               ref={shadow}
@@ -316,7 +421,7 @@ export function HeroChat() {
           </div>
         </div>
       </div>
-      {/* Pin: ~35svh επιπλέον scroll όσο το κινητό μένει καρφωμένο (βλ. .hero-pin στο globals.css) */}
+      {/* Pin: 6 × 90px επιπλέον scroll όσο το κινητό μένει καρφωμένο (βλ. .hero-pin στο globals.css) */}
       <div aria-hidden className="hero-pin" />
     </div>
   );

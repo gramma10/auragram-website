@@ -91,9 +91,14 @@ export function StickyCta() {
 
     // Ανάλυση: σταθερή συμπεριφορά (δεν άλλαξε) — scroll depth 75%.
     let raf = 0;
+    // scrollHeight/innerHeight ΔΕΝ διαβάζονται σε κάθε scroll (forced layout μετά τα transforms του hero): cache, ανανέωση σε resize / αλλαγή μεγέθους σελίδας.
+    let range = 1;
+    const measureRange = () => {
+      range = document.documentElement.scrollHeight - window.innerHeight || 1;
+    };
     const update = () => {
       raf = 0;
-      const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight || 1);
+      const pct = window.scrollY / range;
       if (pct > 0.75) trackOnce('scroll_75');
       if (!hasHero) sync();
     };
@@ -101,11 +106,18 @@ export function StickyCta() {
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
-    onScroll(); // πρώτο update στο επόμενο frame — όχι σύγχρονη ανάγνωση layout (scrollHeight) μέσα στο hydration
+    const rangeRaf = requestAnimationFrame(measureRange); // όχι σύγχρονη ανάγνωση layout (scrollHeight) μέσα στο hydration
+    const rangeObs = new ResizeObserver(measureRange);
+    rangeObs.observe(document.body);
+    onScroll(); // πρώτο update στο επόμενο frame
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', measureRange);
 
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', measureRange);
+      rangeObs.disconnect();
+      cancelAnimationFrame(rangeRaf);
       if (raf) cancelAnimationFrame(raf);
       mo.disconnect();
       fmo.disconnect();

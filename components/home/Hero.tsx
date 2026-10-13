@@ -60,7 +60,8 @@ export function Hero() {
         <HeroChat />
       </div>
 
-      <div className="relative mx-auto mt-14 w-full max-w-page border-t border-white/[0.08] pt-8 sm:mt-16 sm:pt-10">
+      {/* Mobile: το proof bar ακολουθεί αμέσως το κινητό — κενό ≤ 32px (8 + 1 border + 16 + ≈4 line-height) αντί για 56 + 32 */}
+      <div className="relative mx-auto mt-2 w-full max-w-page border-t border-white/[0.08] pt-4 sm:mt-16 sm:pt-10">
         <ProofBar />
       </div>
 

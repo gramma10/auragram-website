@@ -27,14 +27,14 @@ function buildSteps(s: Scenario, gap: number): Step[] {
 }
 
 const collapse =
-  'overflow-hidden transition-[max-height,opacity,transform,padding] duration-500 ease-out motion-reduce:transition-none';
+  'overflow-hidden transition-[max-height,opacity,transform,padding] ease-out motion-reduce:transition-none';
 const shownCls = 'max-h-[260px] translate-y-0 pb-2.5 opacity-100';
 const hiddenCls = 'pointer-events-none max-h-0 translate-y-2 pb-0 opacity-0';
 
 export function ChatPlayer({
   scenario,
   playing = true,
-  scrollStep = 0,
+  controlledStep,
   loop = true,
   startDelay = 1300,
   gap = 1250,
@@ -46,10 +46,11 @@ export function ChatPlayer({
   /** false = η συνομιλία περιμένει (μόνο το πρώτο μήνυμα φαίνεται)· true = ξεκινά. */
   playing?: boolean;
   /**
-   * Scroll-driven δάπεδο (hero mobile): 0..steps.length = ποια βήματα έχει ήδη αποκαλύψει το scroll· steps.length + 1 = και το toast.
-   * Ορατό βήμα = max(timer, scroll) — το timer τρέχει ανεξάρτητα ως fallback. Το γονικό component το κρατά latched (μόνο αυξάνεται).
+   * Ελεγχόμενο βήμα (hero mobile, scroll-driven): 0..steps.length = πόσα βήματα φαίνονται· steps.length + 1 = και το toast.
+   * Όταν δίνεται, ΔΕΝ τρέχει timer: το γονικό component ορίζει το βήμα από τη θέση scroll (αντιστρέψιμο) ή από το idle fallback,
+   * και οι μεταβάσεις είναι 200ms (scrubbing αντί για 500ms αφήγηση).
    */
-  scrollStep?: number;
+  controlledStep?: number;
   /** true = ξαναρχίζει μετά από παύση στο τέλος (desktop)· false = μένει στην τελική κατάσταση (mobile scroll-driven hero). */
   loop?: boolean;
   startDelay?: number;
@@ -66,8 +67,9 @@ export function ChatPlayer({
   const cb = useRef({ onFinishedChange });
   cb.current = { onFinishedChange };
 
-  // Ορατό βήμα: το μεγαλύτερο ανάμεσα σε αυτό του timer και σε αυτό του scroll.
-  const shown = Math.max(cursor, Math.min(scrollStep, steps.length));
+  const controlled = controlledStep !== undefined;
+  // Ορατό βήμα: ελεγχόμενο από το γονικό (scroll) ή από το timer.
+  const shown = controlled ? Math.min(controlledStep, steps.length) : cursor;
 
   // Τι φαίνεται τώρα (παράγωγο του shown).
   const view = useMemo(() => {
@@ -81,7 +83,7 @@ export function ChatPlayer({
     return { msgs, status };
   }, [shown, steps]);
 
-  const finished = cursor >= steps.length || scrollStep > steps.length; // toast: timer στο τελευταίο βήμα, ή scroll πέρα από το chip
+  const finished = controlled ? controlledStep > steps.length : cursor >= steps.length; // toast: μετά το chip (ελεγχόμενο) ή στο τελευταίο βήμα του timer
 
   // Χρονισμός
   useEffect(() => {
@@ -89,7 +91,7 @@ export function ChatPlayer({
       setCursor(steps.length); // τελική κατάσταση, στατικά
       return;
     }
-    if (!playing) return;
+    if (controlled || !playing) return;
     if (cursor < steps.length) {
       const t = setTimeout(() => setCursor((c) => c + 1), cursor === 0 ? startDelay : steps[cursor].wait);
       return () => clearTimeout(t);
@@ -97,7 +99,7 @@ export function ChatPlayer({
     if (!loop) return;
     const t = setTimeout(() => setCursor(0), endPause); // παύση στο τέλος, μετά restart από το 1ο μήνυμα
     return () => clearTimeout(t);
-  }, [reduced, playing, loop, cursor, steps, startDelay, endPause]);
+  }, [reduced, controlled, playing, loop, cursor, steps, startDelay, endPause]);
 
   useEffect(() => {
     cb.current.onFinishedChange?.(finished && steps.length > 0);
@@ -107,11 +109,12 @@ export function ChatPlayer({
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
-    const toEnd = () => el.scrollTo({ top: el.scrollHeight, behavior: reduced ? 'auto' : 'smooth' });
+    // scrubbing: ακαριαία (το max-height μεταβαίνει σε 200ms) — smooth scroll μέσα στη λίστα θα «έτρεχε πίσω» από το δάχτυλο
+    const toEnd = () => el.scrollTo({ top: el.scrollHeight, behavior: reduced || controlled ? 'auto' : 'smooth' });
     toEnd();
-    const t = setTimeout(toEnd, 520);
+    const t = setTimeout(toEnd, controlled ? 220 : 520);
     return () => clearTimeout(t);
-  }, [shown, reduced]);
+  }, [shown, reduced, controlled]);
 
   const st = scenario.status;
 
@@ -126,6 +129,7 @@ export function ChatPlayer({
                 className={cn(
                   'max-w-[86%]',
                   collapse,
+                  controlled ? 'duration-200' : 'duration-500',
                   m.from === 'agent' ? 'self-end' : 'self-start',
                   i < view.msgs ? shownCls : hiddenCls
                 )}
@@ -158,7 +162,8 @@ export function ChatPlayer({
         {st && (
           <div
             className={cn(
-              'mt-2.5 flex shrink-0 items-center gap-2.5 rounded-xl border border-aura/30 bg-aura/[0.07] px-3.5 py-3 transition-all duration-500 motion-reduce:transition-none',
+              'mt-2.5 flex shrink-0 items-center gap-2.5 rounded-xl border border-aura/30 bg-aura/[0.07] px-3.5 py-3 transition-[opacity,transform] motion-reduce:transition-none',
+              controlled ? 'duration-200' : 'duration-500',
               view.status ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
             )}
           >

@@ -15,3 +15,5 @@ tsconfig.tsbuildinfo
 .clasp.json
 .clasprc.json
 .gas-deploy/
+.next-before
+.next-after

@@ -463,7 +463,11 @@ html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 450px; }
 @media (max-width: 639px) {
   /* Το sticky κινείται μόνο μέσα στο CONTENT box του γονέα — όχι στο padding. Γι' αυτό το pin είναι ένας κενός spacer μετά το κινητό. */
   html[data-js] .hero-pin {
-    height: 35svh;
+    height: 540px; /* 6 βήματα συνομιλίας × 90px scroll (βλ. PIN_PX στο HeroChat) */
+  }
+  /* Το scale του κινητού δεν μικραίνει το box του στη ροή: το HeroChat γράφει --gapfix (= χαμένο ύψος) → το proof bar ακολουθεί αμέσως μετά τη λεζάντα. */
+  html[data-js] .hero-stage {
+    margin-bottom: calc(var(--gapfix, 0px) * -1);
   }
   html[data-js] .hero-phone {
     position: sticky;
@@ -471,13 +475,7 @@ html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 450px; }
     transform-origin: 50% 0;
     transform: rotate(-9deg) scale(0.82);
   }
-  .hero-float.is-idle {
-    animation: hero-float 5s ease-in-out infinite;
-  }
-  /* Pinned: πολύ ήπιο float ±2.5px / 6s (ξεκινά από 0 — κανένα άλμα στην είσοδο) */
-  .hero-float.is-pin {
-    animation: hero-float-pin 6s ease-in-out infinite;
-  }
+  /* Float (idle ±5px/5s στην κορυφή, ±2.5px/6s όσο είναι καρφωμένο): το γράφει το HeroChat με WAAPI (translate3d). */
   /* Σκιά/λάμψη κάτω από το κινητό («levitation»): ελλειπτικό radial-gradient (το θόλωμα είναι στο gradient, όχι filter)·
      το HeroChat γράφει μόνο transform (scaleX) και opacity ανά scroll. */
   html[data-js] .hero-shadow {
@@ -498,27 +496,6 @@ html[data-js]:not([data-ready]) footer { contain-intrinsic-size: auto 450px; }
   }
   html[data-js] .hero-phone {
     position: relative;
-  }
-}
-@keyframes hero-float-pin {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  25% {
-    transform: translateY(-2.5px);
-  }
-  75% {
-    transform: translateY(2.5px);
-  }
-}
-@keyframes hero-float {
-  0%,
-  100% {
-    transform: translateY(-5px);
-  }
-  50% {
-    transform: translateY(5px);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -676,6 +653,12 @@ html[data-minibar] .sticky-cta {
     --angle: 360deg;
     opacity: 0;
   }
+}
+
+/* Όσο τρέχει το hero scroll (HeroChat → html[data-hero-anim]) τα διακοσμητικά animations σταματούν: aura blobs + pulse-dot μέσα στο κινητό. */
+html[data-hero-anim] .aura-blob,
+html[data-hero-anim] .hero-phone .animate-pulse-dot {
+  animation-play-state: paused;
 }
 
 /* ── Aura (hero + agents): 3 radial-gradient blobs, ΜΟΝΟ transform. Cyan / deep cyan / violet halo (logo), opacity 0.10–0.18 (violet ≤ 0.14). ────────
