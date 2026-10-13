@@ -21,6 +21,10 @@ const FADE_FROM = 0.15;
 const FADE_TO = 0.7;
 const LIFT = -24;
 
+// Pin → συνομιλία: πρόοδος του pin (0 → 1) που αποκαλύπτει κάθε βήμα. Μήνυμα 1 φαίνεται ήδη πριν το pin.
+// [μήνυμα 2, μήνυμα 3, μήνυμα 4, μήνυμα 5, chip «Ραντεβού κλείστηκε», toast]
+const PIN_STEPS = [0.15, 0.35, 0.55, 0.72, 0.85, 0.95];
+
 const TILT = -9; // deg, STATE 0
 const SCALE0 = 0.82; // STATE 0
 const NAV_B = 72; // top bar: top-3 (12) + 60
@@ -36,8 +40,11 @@ const DOCK_FALLBACK = 72;
  *    θέση pin = κέντρο ανάμεσα σε top bar και dock). rotate → 0° και scale → 1 (ease-out cubic) ΑΚΡΙΒΩΣ μέχρι εκεί, άρα στο 100% του settle
  *    το κινητό είναι ευθύ, πλήρους μεγέθους ΚΑΙ κεντραρισμένο — και δεν περνά ποτέ πάνω από το κείμενο του hero που φεύγει (η θέση ακολουθεί
  *    τη ροή της σελίδας, όχι transform).
- *  • PINNED: καρφωμένο ~50svh scroll (ο spacer .hero-pin — το padding ΔΕΝ δουλεύει με sticky). Η συνομιλία ξεκινά ΜΙΑ φορά τη στιγμή που
+ *  • PINNED: καρφωμένο ~35svh scroll (ο spacer .hero-pin — το padding ΔΕΝ δουλεύει με sticky). Η συνομιλία ξεκινά ΜΙΑ φορά τη στιγμή που
  *    ολοκληρώνεται το settle και δεν ξαναρχίζει ποτέ· το toast βγαίνει από το άκρο του κινητού στο βήμα κράτησης· η λεζάντα εμφανίζεται.
+ *  • ΣΥΝΟΜΙΛΙΑ SCROLL-DRIVEN: μέσα στο pin κάθε βήμα αποκαλύπτεται σε συγκεκριμένη πρόοδο (PIN_STEPS: .15/.35/.55/.72/.85/.95 → μηνύματα 2–5, chip,
+ *    toast). Ορατό βήμα = max(scroll, timer): το timer (ξεκινά στο settle) ολοκληρώνει τη συνομιλία μόνο του αν ο επισκέπτης σταματήσει· τα βήματα
+ *    μόνο προχωρούν (latched) — scroll προς τα πάνω δεν κρύβει τίποτα.
  *  • RELEASE: το sticky λήγει και το κινητό φεύγει κανονικά.
  *  • CINEMATIC (Round 8): (1) το κείμενο του hero ξεθωριάζει + ανεβαίνει (15% → 70% του settle)· (2) το κινητό «ανεβαίνει μόνο του»: η θέση του
  *    στην οθόνη = lerp(startTop, pinTop, easeInOutCubic(p)) — transform translateY = (καμπύλη − φυσική θέση ροής), που είναι ΑΚΡΙΒΩΣ 0 στο p=0 και
@@ -55,6 +62,8 @@ export function HeroChat() {
   // Μόνο σε scroll-driven mode: έγινε το settle (latched όσο μένουμε σε αυτό το mode).
   const [settled, setSettled] = useState(false);
   const started = !scrollDriven || settled;
+  // Βήμα που έχει φτάσει το scroll στο pin (0..PIN_STEPS.length)· latched — μόνο αυξάνεται, ποτέ δεν επιστρέφει.
+  const [scrollStep, setScrollStep] = useState(0);
 
   const stage = useRef<HTMLDivElement>(null);
   const phone = useRef<HTMLDivElement>(null);
@@ -99,9 +108,11 @@ export function HeroChat() {
     let done = false;
     let ranged = false; // will-change ενεργό
     let lastT = '';
+    let stepSeen = 0; // τελευταίο βήμα που στείλαμε στο ChatPlayer
     let raf = 0;
 
     setSettled(false);
+    setScrollStep(0);
     P.dataset.armed = '';
 
     const measure = () => {
@@ -194,6 +205,18 @@ export function HeroChat() {
         floatMode = want;
       }
 
+      // Συνομιλία: πρόοδος μέσα στο pin → βήμα. Ίδιος handler (κανένα επιπλέον listener). Μόνο αυξάνεται.
+      const pinSpan = pinEnd - y1;
+      if (pinSpan > 1) {
+        const pp = clamp01((y - y1) / pinSpan);
+        let n = 0;
+        while (n < PIN_STEPS.length && pp >= PIN_STEPS[n]) n++;
+        if (n > stepSeen) {
+          stepSeen = n;
+          setScrollStep(n);
+        }
+      }
+
       if (p >= 1 && !done) {
         done = true; // latched: δεν ξαναρχίζει
         P.dataset.settled = '';
@@ -272,6 +295,7 @@ export function HeroChat() {
             key={scrollDriven ? 'scroll' : 'free'}
             scenario={heroPhone.scenario}
             playing={started}
+            scrollStep={scrollDriven ? scrollStep : 0}
             loop={!scrollDriven}
             screenClassName="h-[600px] max-h-[min(70svh,calc(100svh_-_236px))] sm:max-h-none"
             onFinishedChange={setBooked}
@@ -292,7 +316,7 @@ export function HeroChat() {
           </div>
         </div>
       </div>
-      {/* Pin: ~50svh επιπλέον scroll όσο το κινητό μένει καρφωμένο (βλ. .hero-pin στο globals.css) */}
+      {/* Pin: ~35svh επιπλέον scroll όσο το κινητό μένει καρφωμένο (βλ. .hero-pin στο globals.css) */}
       <div aria-hidden className="hero-pin" />
     </div>
   );

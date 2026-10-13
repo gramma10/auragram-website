@@ -34,6 +34,7 @@ const hiddenCls = 'pointer-events-none max-h-0 translate-y-2 pb-0 opacity-0';
 export function ChatPlayer({
   scenario,
   playing = true,
+  scrollStep = 0,
   loop = true,
   startDelay = 1300,
   gap = 1250,
@@ -44,6 +45,11 @@ export function ChatPlayer({
   scenario: Scenario;
   /** false = η συνομιλία περιμένει (μόνο το πρώτο μήνυμα φαίνεται)· true = ξεκινά. */
   playing?: boolean;
+  /**
+   * Scroll-driven δάπεδο (hero mobile): 0..steps.length = ποια βήματα έχει ήδη αποκαλύψει το scroll· steps.length + 1 = και το toast.
+   * Ορατό βήμα = max(timer, scroll) — το timer τρέχει ανεξάρτητα ως fallback. Το γονικό component το κρατά latched (μόνο αυξάνεται).
+   */
+  scrollStep?: number;
   /** true = ξαναρχίζει μετά από παύση στο τέλος (desktop)· false = μένει στην τελική κατάσταση (mobile scroll-driven hero). */
   loop?: boolean;
   startDelay?: number;
@@ -60,19 +66,22 @@ export function ChatPlayer({
   const cb = useRef({ onFinishedChange });
   cb.current = { onFinishedChange };
 
-  // Τι φαίνεται τώρα (παράγωγο του cursor).
+  // Ορατό βήμα: το μεγαλύτερο ανάμεσα σε αυτό του timer και σε αυτό του scroll.
+  const shown = Math.max(cursor, Math.min(scrollStep, steps.length));
+
+  // Τι φαίνεται τώρα (παράγωγο του shown).
   const view = useMemo(() => {
     let msgs = 1;
     let status = false;
-    for (let k = 0; k < cursor && k < steps.length; k++) {
+    for (let k = 0; k < shown && k < steps.length; k++) {
       const st = steps[k];
       if (st.kind === 'msg') msgs = (st.i ?? 0) + 1;
       else status = true;
     }
     return { msgs, status };
-  }, [cursor, steps]);
+  }, [shown, steps]);
 
-  const finished = cursor >= steps.length;
+  const finished = cursor >= steps.length || scrollStep > steps.length; // toast: timer στο τελευταίο βήμα, ή scroll πέρα από το chip
 
   // Χρονισμός
   useEffect(() => {
@@ -102,7 +111,7 @@ export function ChatPlayer({
     toEnd();
     const t = setTimeout(toEnd, 520);
     return () => clearTimeout(t);
-  }, [cursor, reduced]);
+  }, [shown, reduced]);
 
   const st = scenario.status;
 
