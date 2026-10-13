@@ -23,6 +23,11 @@ function PhotoSlot({ name, src }: { name: string; src?: string }) {
         alt={`${name}, συνιδρυτής της Auragram`}
         width={400}
         height={500}
+        // sizes = πλάτος που ΖΩΓΡΑΦΙΖΕΤΑΙ η εικόνα (object-cover σε τετράγωνη πηγή → πλάτος ≈ ύψος κάδρου): <640px ≈ 385px (κάρτα 4:5 ~308px πλάτος),
+        // ≥640px το κάδρο είναι 140px πλάτος αλλά το flex το τεντώνει σε ~380px ύψος → η εικόνα ζωγραφίζεται ~380px πλατιά.
+        sizes="(min-width: 640px) 400px, 390px"
+        quality={90}
+        style={{ objectPosition: '51% 50%' }}
         className="h-full w-full object-cover"
       />
     );

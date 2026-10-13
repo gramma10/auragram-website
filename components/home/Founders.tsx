@@ -7,8 +7,8 @@ import { Reveal } from '@/components/ui/Reveal';
 
 // Ο ρόλος (about.people[].role) και το handle (BRAND.instagram) έρχονται από υπάρχοντα δεδομένα.
 const handles = [BRAND.instagram.christos.handle, BRAND.instagram.panagiotis.handle];
-// Κάθετη θέση κάδρου ανά φωτογραφία: κρατά το πρόσωπο στο κέντρο του 4:5 crop.
-const facePosition = ['50% 34%', '50% 30%'];
+// Θέση κάδρου: οι πηγές είναι τετράγωνες και το κάδρο 4:5 κόβει μόνο στο πλάτος — το πρόσωπο βρίσκεται στο ~51% του πλάτους.
+const facePosition = ['51% 50%', '51% 50%'];
 
 /** Placeholder αντί για stock ή AI-generated πρόσωπο. Το ένα ψεύτικο στοιχείο καίει τη σελίδα. */
 function PhotoSlot({ name, src, position }: { name: string; src?: string; position: string }) {
@@ -18,10 +18,13 @@ function PhotoSlot({ name, src, position }: { name: string; src?: string; positi
         src={src}
         alt={`${name}, συνιδρυτής Auragram`}
         fill
-        sizes="(min-width: 1024px) 230px, (min-width: 640px) 40vw, 45vw"
+        // sizes = πλάτος που πραγματικά ζωγραφίζεται η εικόνα (όχι του κάδρου): με object-fit: cover σε 4:5 κάδρο η τετράγωνη πηγή
+        // σκαλώνει στο ύψος → πλάτος εικόνας = 1.25 × πλάτος κάδρου (βλ. docs/funnel-v2/REPORT-hero-photos.md για τις μετρήσεις).
+        sizes="(min-width: 1024px) 360px, (min-width: 640px) 52vw, 56vw"
+        quality={90}
         loading="lazy"
-        // Ενιαία χρωματική μεταχείριση: οι δύο φωτογραφίες (δύο διαφορετικά περιβάλλοντα) κάθονται πιο κοντά.
-        style={{ objectFit: 'cover', objectPosition: position, filter: 'saturate(0.9) contrast(1.02) sepia(0.06)' }}
+        // Χωρίς CSS filter/transform πάνω στην εικόνα: το φίλτρο ξαναζωγράφιζε τα pixel και μαλάκωνε το πρόσωπο.
+        style={{ objectFit: 'cover', objectPosition: position }}
       />
     );
   }
