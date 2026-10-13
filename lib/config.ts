@@ -88,7 +88,7 @@ export const BRAND = {
 export const LEGAL = {
   controllerA: 'Παναγιώτης Γραμματικού',
   controllerB: 'Χρήστος Αβραμίδης',
-  city: null as string | null, // {{TODO: πόλη}} — η πόλη των ιδρυτών, π.χ. 'Θεσσαλονίκη'
+  city: 'Θεσσαλονίκη' as string | null, // η πόλη των ιδρυτών (/privacy, /terms)
 };
 
 /**

@@ -1,5 +1,5 @@
 /**
- * Rate limit ΜΝΗΜΗΣ για τη φόρμα: max 3 αιτήματα ανά IP ανά ώρα, max 1 ανά (κανονικοποιημένο) κινητό ανά 24ω.
+ * Rate limit ΜΝΗΜΗΣ για τη φόρμα: max 10 αιτήματα ανά IP ανά ώρα, max 1 ανά (κανονικοποιημένο) κινητό ανά 24ω.
  *
  * ⚠️ BEST-EFFORT: στο Vercel κάθε serverless instance έχει δική του μνήμη και ξεκινά «άδεια» σε cold start, άρα το όριο
  * δεν είναι αυστηρό ανάμεσα σε instances (δεν προσθέτουμε πληρωμένη υπηρεσία — Redis/KV — σύμφωνα με το brief).
@@ -8,7 +8,7 @@
  */
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
-const MAX_PER_IP = 3;
+const MAX_PER_IP = 10; // ψηλά επίτηδες: πίσω από CGNAT (δίκτυα κινητής) πολλοί πραγματικοί επισκέπτες μοιράζονται IP
 const MAX_KEYS = 5000; // φράγμα μνήμης
 
 type Store = { ip: Map<string, number[]>; phone: Map<string, number> };
