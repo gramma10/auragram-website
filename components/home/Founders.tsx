@@ -1,12 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { founders, about } from '@/lib/content';
-import { BRAND } from '@/lib/config';
 import { Section, Eyebrow, H2 } from '@/components/ui/Section';
 import { Reveal } from '@/components/ui/Reveal';
+import { Role } from '@/components/ui/Role';
 
-// Ο ρόλος (about.people[].role) και το handle (BRAND.instagram) έρχονται από υπάρχοντα δεδομένα.
-const handles = [BRAND.instagram.christos.handle, BRAND.instagram.panagiotis.handle];
 // Θέση κάδρου: οι πηγές είναι τετράγωνες και το κάδρο 4:5 κόβει μόνο στο πλάτος — το πρόσωπο βρίσκεται στο ~51% του πλάτους.
 const facePosition = ['51% 50%', '51% 50%'];
 
@@ -49,9 +47,17 @@ export function Founders() {
           </H2>
           <p className="t-body pt-6 text-ink/70">{founders.body}</p>
 
+          <ul className="flex flex-wrap gap-2 pt-6">
+            {founders.chips.map((c) => (
+              <li key={c} className="chip-light whitespace-nowrap !text-[13px]">
+                {c}
+              </li>
+            ))}
+          </ul>
+
           <Link
             href="/about"
-            className="mt-8 inline-flex min-h-[44px] items-center gap-2 border-b-2 border-aura-deep font-display text-[16px] font-extrabold tracking-tight text-ink transition-colors hover:border-ink"
+            className="mt-6 inline-flex min-h-[44px] items-center gap-2 border-b-2 border-aura-deep font-display text-[16px] font-extrabold tracking-tight text-ink transition-colors hover:border-ink"
           >
             {founders.link}
             <span aria-hidden>→</span>
@@ -67,15 +73,7 @@ export function Founders() {
                 </div>
                 <figcaption className="pt-3">
                   <p className="font-display text-[16px] font-semibold tracking-tight text-ink">{p.name}</p>
-                  <p className="pt-0.5 text-[14px] leading-snug text-ink-soft">{p.role}</p>
-                  <a
-                    href={p.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1 inline-flex min-h-[44px] items-center font-mono text-[12px] font-medium tracking-[0.02em] text-ink-soft underline decoration-ink/20 underline-offset-4 transition-colors hover:text-ink hover:decoration-ink"
-                  >
-                    {handles[i]} ↗
-                  </a>
+                  <Role text={p.role} className="pt-0.5 text-[14px] leading-snug text-ink-soft" />
                 </figcaption>
               </figure>
             ))}

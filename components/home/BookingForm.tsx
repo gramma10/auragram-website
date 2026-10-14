@@ -265,9 +265,18 @@ export default function BookingForm() {
             className="flex flex-col gap-5 p-6 sm:p-8"
           >
             <div>
-              <p className="eyebrow text-ink-soft">ΑΙΤΗΜΑ ΓΙΑ ΤΟΝ ΧΑΡΤΗ AI</p>
-              <p className="pt-3 font-display text-[18px] font-extrabold tracking-tight text-ink">
+              {/* μόνο από sm+: στο κινητό το χώρο τον παίρνει το callout παρακάτω (το κουμπί δεν κατεβαίνει > ~60px) */}
+              <p className="eyebrow hidden text-ink-soft sm:block">ΑΙΤΗΜΑ ΓΙΑ ΤΟΝ ΧΑΡΤΗ AI</p>
+              <p className="font-display text-[18px] font-extrabold tracking-tight text-ink sm:pt-3">
                 Πείτε μας δυο πράγματα και σας καλούμε.
+              </p>
+              {/* Η φόρμα ως ζωντανή απόδειξη: μικρό callout με aura-deep αριστερό κανόνα (σύντομο ώστε να μη σπρώχνει πολύ το κουμπί στο κινητό). */}
+              <p
+                data-live-proof
+                className="mt-3 border-l-2 border-aura-deep pl-3 text-[12.5px] leading-snug text-ink/75"
+              >
+                Αυτή η φόρμα είναι ένα από τα συστήματά μας: μόλις τη στείλετε, μπαίνει στο CRM μας και λαμβάνετε email
+                επιβεβαίωσης μέσα σε δευτερόλεπτα. Δείτε το μόνοι σας.
               </p>
             </div>
 

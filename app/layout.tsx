@@ -10,6 +10,7 @@ import { AnchorReady } from '@/components/AnchorReady';
 import { ScrollProgress } from '@/components/ScrollProgress';
 import { MobileChromeProvider } from '@/components/chrome/MobileChrome';
 import { BLOCK_INDEXING, BRAND, contactEmail } from '@/lib/config';
+import { about } from '@/lib/content';
 
 export const metadata: Metadata = {
   metadataBase: new URL(BRAND.siteUrl),
@@ -64,10 +65,7 @@ const orgJsonLd = {
   description:
     'Ελληνική AI agency δύο ιδρυτών. Χτίζουμε AI agents και αυτοματισμούς για μικρομεσαίες επιχειρήσεις.',
   areaServed: { '@type': 'Country', name: 'Ελλάδα' },
-  founder: [
-    { '@type': 'Person', name: 'Χρήστος' },
-    { '@type': 'Person', name: 'Παναγιώτης' },
-  ],
+  founder: about.people.map((p) => ({ '@type': 'Person', name: p.name, jobTitle: p.role })),
 };
 
 const serviceJsonLd = {
@@ -78,12 +76,6 @@ const serviceJsonLd = {
   areaServed: { '@type': 'Country', name: 'Ελλάδα' },
   description:
     'AI agents για πωλήσεις, εξυπηρέτηση και operations. Ξεκινάμε με pilot 2–4 εβδομάδων με συμφωνημένο KPI.',
-  offers: {
-    '@type': 'Offer',
-    priceCurrency: 'EUR',
-    price: '1200',
-    description: 'Pilot 2–4 εβδομάδων, ένας agent ζωντανός, ένα μετρήσιμο KPI.',
-  },
 };
 
 // suppressHydrationWarning στο <html>: το inline script στο <head> βάζει data-js / data-ready ΠΡΙΝ το hydration — αλλιώς το React (dev) τα

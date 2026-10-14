@@ -167,8 +167,12 @@ fs.writeFileSync(path.join(here, 'payload-example.json'), JSON.stringify({ secre
 await mock('/__mode?m=ok');
 await page.goto(`${SITE}/`, { waitUntil: 'networkidle0' });
 async function fillAndSubmit(phone, { wait = 3300 } = {}) {
-  await page.evaluate(() => document.getElementById('klisi')?.scrollIntoView());
-  await page.waitForSelector('#klisi form', { timeout: 15000 });
+  for (let i = 0; i < 5 && !(await page.$('#klisi form')); i++) {
+    // το form είναι lazy (IntersectionObserver): σκρολάρουμε ξανά ώσπου να φορτώσει
+    await page.evaluate(() => window.scrollTo(0, (document.getElementById('klisi')?.getBoundingClientRect().top ?? 0) + scrollY - 100 + Math.random()));
+    await sleep(1500);
+  }
+  await page.waitForSelector('#klisi form', { timeout: 20000 });
   await page.$eval('#klisi form', (f) => f.reset());
   await page.type('#name', 'Γιώργος Νικολάου');
   await page.type('#phone', phone);
@@ -234,8 +238,11 @@ await page.goto(`${SITE}/`, { waitUntil: 'networkidle0' });
 
 // ── 11. honeypot ───────────────────────────────────────────────────────────
 await page.goto(`${SITE}/`, { waitUntil: 'networkidle0' });
-await page.evaluate(() => document.getElementById('klisi')?.scrollIntoView());
-await page.waitForSelector('#klisi form');
+for (let i = 0; i < 5 && !(await page.$('#klisi form')); i++) {
+  await page.evaluate(() => window.scrollTo(0, (document.getElementById('klisi')?.getBoundingClientRect().top ?? 0) + scrollY - 100 + Math.random()));
+  await sleep(1500);
+}
+await page.waitForSelector('#klisi form', { timeout: 20000 });
 const hits0 = (await mock('/__received')).hits;
 await page.type('#name', 'Bot Botsakis');
 await page.type('#phone', '6900000001');

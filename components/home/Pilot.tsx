@@ -3,11 +3,8 @@
 import { useEffect, useRef } from 'react';
 import { useInView } from '@/lib/hooks';
 import { pilot } from '@/lib/content';
-import { PRICING } from '@/lib/config';
-import { formatEUR } from '@/lib/format';
 import { Section, Eyebrow, H2 } from '@/components/ui/Section';
 import { Reveal } from '@/components/ui/Reveal';
-import { CountUp } from '@/components/ui/CountUp';
 import { Cta, CtaMicro } from '@/components/ui/Cta';
 import { Frame } from '@/components/ui/Frame';
 import { Brackets } from '@/components/ui/Brackets';
@@ -39,10 +36,10 @@ export function Pilot() {
             <div className="flex flex-wrap items-baseline gap-x-10 gap-y-6 pt-9">
               <div>
                 <p className="whitespace-nowrap font-display text-[34px] font-extrabold leading-none tracking-tightest text-white tnum sm:text-[40px]">
-                  {pilot.pricePrefix} <CountUp value={PRICING.pilotFromValue} format={formatEUR} />
+                  {pilot.kpiStat.value}
                 </p>
                 <p className="pt-2 font-mono text-[12px] font-medium uppercase tracking-[0.1em] text-fg-dim">
-                  τιμή εκκίνησης
+                  {pilot.kpiStat.label}
                 </p>
               </div>
               <div>

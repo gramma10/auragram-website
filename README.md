@@ -67,14 +67,12 @@ POST στο Google Apps Script (`LEAD_WEBHOOK_URL`) → γραμμή στο Goog
 - [ ] `LEAD_WEBHOOK_URL` + `LEAD_WEBHOOK_SECRET` (Vercel, Production **και** Preview): βλ. `docs/apps-script/README.md`.
       Χωρίς αυτά το lead μένει μόνο στα logs.
 - [ ] `NEXT_PUBLIC_SITE_URL` = το πραγματικό domain
-- [x] `lib/config.ts` → `BRAND.instagram`: αληθινά handles (@xrhstos.auramidis, @panagiotis.gramma)
 - [x] `about.story` + `about.people` (bios, ρόλοι, IG): συμπληρωμένα
 - [ ] `LEGAL.city` στο `lib/config.ts` (η πόλη στο /privacy και /terms) — το production build αποτυγχάνει χωρίς αυτήν
 - [ ] Φωτογραφίες ιδρυτών: αποθηκεύστε `public/founders/christos.jpg` και
       `public/founders/panagiotis.jpg` (τα paths είναι ήδη συνδεδεμένα στο content.ts)
 
 ### Μόλις υπάρχουν πραγματικά δεδομένα
-- [ ] `METRICS.instagramFollowers` → εμφανίζεται 3ο στατιστικό στη γραμμή αποδείξεων
 - [ ] `METRICS.agentResults.*` → εμφανίζεται η γραμμή «→ αποτέλεσμα» σε κάθε κάρτα agent.
       **Μόνο μετά το πρώτο pilot.** Εφευρεμένο νούμερο = καμένη κλήση όταν σας το ρωτήσουν.
 - [ ] `about.built.items` → screen recordings 30–60″ σε `public/demos/`

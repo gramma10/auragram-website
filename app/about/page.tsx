@@ -6,6 +6,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Frame } from '@/components/ui/Frame';
 import { Cta, CtaMicro } from '@/components/ui/Cta';
 import { TrackView } from '@/components/ui/TrackView';
+import { Role } from '@/components/ui/Role';
 import { StackIcon } from '@/components/about/StackIcon';
 
 export const metadata: Metadata = {
@@ -112,9 +113,7 @@ export default function AboutPage() {
                     <h3 className="pt-4 font-display text-[21px] font-extrabold tracking-tight text-white">
                       {p.name}
                     </h3>
-                    <p className="pt-1 font-mono text-[12px] uppercase tracking-[0.12em] text-aura">
-                      {p.title}
-                    </p>
+                    <Role text={p.role} className="pt-1.5 font-mono text-[12px] leading-relaxed tracking-[0.04em] text-aura" />
                     <p className="pt-4 text-[15px] leading-relaxed text-fg">{p.body}</p>
 
                     <dl className="flex flex-col gap-2 pt-5 text-[13px] leading-relaxed">
@@ -126,16 +125,8 @@ export default function AboutPage() {
                       </div>
                     </dl>
 
-                    <div className="mt-auto flex flex-wrap gap-4 pt-6">
-                      <a
-                        href={p.instagram}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-mono text-[12px] uppercase tracking-[0.12em] text-fg-dim transition-colors hover:text-aura"
-                      >
-                        Instagram ↗
-                      </a>
-                      {p.linkedin && (
+                    {p.linkedin && (
+                      <div className="mt-auto flex flex-wrap gap-4 pt-6">
                         <a
                           href={p.linkedin}
                           target="_blank"
@@ -144,8 +135,8 @@ export default function AboutPage() {
                         >
                           LinkedIn ↗
                         </a>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Frame>

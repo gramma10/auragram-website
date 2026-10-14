@@ -8,7 +8,7 @@
  *      Ό,τι είναι `null` παρακάτω απλά ΔΕΝ εμφανίζεται στη σελίδα.
  *      Βάλτε τιμή μόνο όταν έχετε πραγματικό δεδομένο.
  */
-import { formatEUR, formatEURRange } from './format';
+import { formatEUR } from './format';
 
 // ── ΤΟ ΕΝΑ ΚΑΙ ΜΟΝΑΔΙΚΟ CTA ────────────────────────────────────────────────
 // Χρησιμοποιείται αυτούσιο σε ΚΑΘΕ κουμπί του site. Καμία παραλλαγή.
@@ -23,15 +23,8 @@ export const CTA = {
 export const OFFER_NAME = 'Ο Χάρτης AI της Επιχείρησής σας';
 
 // ── ΤΙΜΕΣ ──────────────────────────────────────────────────────────────────
-// Αλλάζετε τα νούμερα εδώ — η μορφή «1.200 €» βγαίνει από το lib/format.ts.
-const PILOT_FROM_EUR = 1200;
-
+// Οι τιμές pilot/retainer ΔΕΝ δημοσιεύονται στο site (λέγονται γραπτώς στην κλήση). Μένει μόνο η αξία του δωρεάν Χάρτη AI.
 export const PRICING = {
-  /** Αριθμητική τιμή — για count-up στο Pilot. */
-  pilotFromValue: PILOT_FROM_EUR,
-  pilotFrom: formatEUR(PILOT_FROM_EUR),
-  pilotRange: formatEURRange(1200, 1900),
-  retainerFrom: formatEUR(400),
   mapValue: formatEUR(350),
   callsPerWeek: 4,
   /** {{TODO: τιμή «από» για ιστοσελίδες}} π.χ. formatEUR(900). null = η γραμμή «Από …» στο tab 05 δεν εμφανίζεται. */
@@ -47,10 +40,6 @@ export const PROMISES = {
 // ── ΝΟΥΜΕΡΑ ΠΟΥ ΛΕΙΠΟΥΝ (§4, §7 του spec) ──────────────────────────────────
 // Όσο είναι null, η αντίστοιχη γραμμή/στατιστικό δεν εμφανίζεται καθόλου.
 export const METRICS = {
-  /** {{TODO: IG_FOLLOWERS}} π.χ. '12k' → «12k άτομα μας ακολουθούν στο Instagram».
-   *  Κενό (null) = η proof bar δείχνει 2 κεντραρισμένες στήλες. */
-  instagramFollowers: null as string | null,
-
   /** Γραμμή αποτελέσματος ανά agent — μόνο μετά το 1ο πραγματικό pilot. */
   agentResults: {
     sales: null as string | null, // {{TODO: sales outcome line}} π.χ. '+8 ραντεβού/μήνα'
@@ -66,16 +55,6 @@ export const BRAND = {
   legalName: 'Auragram',
   email: 'auragram.web@gmail.com',
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://auragram.gr',
-  instagram: {
-    christos: {
-      handle: '@xrhstos.auramidis',
-      url: 'https://www.instagram.com/xrhstos.auramidis/',
-    },
-    panagiotis: {
-      handle: '@panagiotis.gramma',
-      url: 'https://www.instagram.com/panagiotis.gramma/',
-    },
-  },
 } as const;
 
 /**

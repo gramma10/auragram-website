@@ -11,7 +11,7 @@ const eur = new Intl.NumberFormat('el-GR', {
 
 export const formatEUR = (n: number) => eur.format(Math.round(n));
 
-/** Εύρος τιμών: «1.200–1.900 €» (το σύμβολο μία φορά, στο τέλος). */
+/** Εύρος τιμών: «100–200 €» (το σύμβολο μία φορά, στο τέλος). */
 export const formatEURRange = (from: number, to: number) => {
   const end = formatEUR(to);
   const start = formatEUR(from).replace(/[\s ]*€$/, '');
